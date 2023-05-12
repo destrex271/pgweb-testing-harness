@@ -10,6 +10,7 @@ function check_push_event() {
 	git fetch
 	if [ $(git rev-list HEAD..origin/master --count) -gt 0 ]; then
 		echo "New push event detected"
+		git pull
 		trigger_tools
 	else
 		echo "No new push events"
