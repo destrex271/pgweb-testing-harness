@@ -17,4 +17,4 @@ jobs:
           repository: postgres/pgweb
 
       - name: List workspace content
-        run: ls -a
+        run: ls -a -R
