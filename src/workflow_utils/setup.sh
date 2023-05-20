@@ -1,3 +1,4 @@
 git clone https://github.com/destrex271/pgweb-testing-harness
-cd src/functional_testing
+cd ../functional_testing
+ls -R
 python test.py
