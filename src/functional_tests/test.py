@@ -1,2 +1,4 @@
-# Todo tests
-print("Tests will be added")
+from django.test import Client
+c = Client()
+response = c.get("/")
+print(response)
