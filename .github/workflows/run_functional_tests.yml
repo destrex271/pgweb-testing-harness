@@ -15,4 +15,5 @@ jobs:
         run: |
           cd src/workflow_utils
           chmod +x setup.sh
+          ls
           setup.sh
