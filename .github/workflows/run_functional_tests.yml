@@ -11,10 +11,5 @@ jobs:
       - name: Checkout Current Repository
         uses: actions/checkout@v3
 
-      # - name: Clone The Pgweb repository
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: postgres/pgweb
-
-      - name: List workspace content
-        run: ls -a -R
+      - name: Clone and shift tests
+        run: src/workflow_utils/setup.sh
