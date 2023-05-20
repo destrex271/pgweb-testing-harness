@@ -13,5 +13,6 @@ jobs:
 
       - name: Clone and shift tests
         run: |
-          chmod +x ./src/workflow_utils/setup.sh
-          ./src/workflow_utils/setup.sh
+          cd src/workflow_utils
+          chmod +x setup.sh
+          setup.sh
