@@ -1,7 +1,7 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.chrome import ChromeType
+# from webdriver_manager.chrome import ChromeType
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -13,7 +13,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.selenium = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        options = webdriver.FirefoxOptions()
+        options.headless = True
+        cls.selenium = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
         # chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
         # chrome_options = Options()
         # options = [
