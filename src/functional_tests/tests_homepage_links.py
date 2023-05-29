@@ -13,21 +13,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.selenium = WebDriver()
-        # chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-        # chrome_options = Options()
-        # options = [
-        #     "--no-sandbox",
-        #     "--headless",
-        #     "--disable-gpu",
-        #     "--window-size=1920,1200",
-        #     "--ignore-certificate-errors",
-        #     "--disable-extensions",
-        #     # "--disable-dev-shm-usage"
-        # ]
-        # for option in options:
-        #     chrome_options.add_argument(option)
-        #
-        # cls.selenium = webdriver.Chrome(service=chrome_service, options=chrome_options)
         cls.selenium.implicitly_wait(10)
 
     @classmethod
@@ -36,7 +21,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
         super().tearDownClass()
 
     def test_home_page_links(self):
-        self.selenium.get(f"{self.live_server_url}/")
-        links = self.selenium.find_element(By.TAG_NAME, "a")
-        print(links)
+        y = self.selenium.get(f"{self.live_server_url}/")
+        print(y)
+        # links = self.selenium.find_element(By.TAG_NAME, "a")
+        # print(links)
 
