@@ -12,6 +12,7 @@ cd pgweb
 # Install python dependencies for the website setup
 sudo apt update && sudo apt-get install -y postgresql-client python3-pip
 pip install -r requirements.txt
+pip install -r ../pgweb-testing-harness/requirements.txt
 
 # Create Database
 psql -h localhost -U postgres -c "CREATE DATABASE pgweb;"
@@ -37,6 +38,5 @@ cat pgweb/settings_local.py
 # functional_tests = ../pgweb-testing-harness/src/functional_tests
 
 for entry in ../pgweb-testing-harness/src/functional_tests/*; do
-	# echo "File is $entry"
 	python manage.py shell <"$entry"
 done
