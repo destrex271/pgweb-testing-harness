@@ -39,5 +39,9 @@ cat pgweb/settings_local.py
 
 for entry in ../pgweb-testing-harness/src/functional_tests/*; do
 	echo "$entry"
-	python manage.py shell <"$entry"
+	cp "$entry" pgweb/
+	ls pgweb
 done
+
+# Run all the tests
+python manage.py test --pattern="tests_*.py"
