@@ -9,8 +9,17 @@ git clone https://github.com/destrex271/pgweb-testing-harness
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
-# Install python dependencies for the website setup
-sudo apt update && sudo apt-get install -y postgresql-client python3-pip chromium-browser
+# Build System dependencies
+sudo apt purge google-chrome-stable
+sudo apt purge chromium-browser
+sudo apt update && sudo apt-get install -y postgresql-client python3-pip chromium-browser firefox libnss3
+
+# Google Chrome Stable Installation
+# wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# sudo dpkg -i google-chrome-stable_current_amd64.deb
+# rm ~/.config/google-chrome/Default/.org.chromium.Chromium.*
+
+# Python dependencies
 pip install -r requirements.txt
 pip install -r ../pgweb-testing-harness/requirements.txt
 
