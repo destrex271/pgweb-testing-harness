@@ -38,5 +38,6 @@ cat pgweb/settings_local.py
 # functional_tests = ../pgweb-testing-harness/src/functional_tests
 
 for entry in ../pgweb-testing-harness/src/functional_tests/*; do
+	echo "$entry"
 	python manage.py shell <"$entry"
 done
