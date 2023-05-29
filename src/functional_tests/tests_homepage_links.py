@@ -1,6 +1,10 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.utils import ChromeType
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 
 class MySeleniumTests(StaticLiveServerTestCase):
@@ -8,7 +12,20 @@ class MySeleniumTests(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.selenium = WebDriver()
+        chrome_serv = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+        chrome_opts = Options()
+        options = [
+            "--headless",
+            "--disable-gpu",
+            "--window-size=1920,1200",
+            "--ignore-certificate-errors",
+            "--disable-extensions",
+            "--no-sandbox",
+            "--disable-dev-shm-usage"
+        ]
+        for option in options:
+            chrome_opts.add_argument(option)
+        cls.selenium = webdriver.Chrome(service=chrome_serv, options=chrome_opts)
         cls.selenium.implicitly_wait(10)
 
     @classmethod

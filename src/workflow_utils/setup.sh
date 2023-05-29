@@ -10,7 +10,7 @@ git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
 # Install python dependencies for the website setup
-sudo apt update && sudo apt-get install -y postgresql-client python3-pip
+sudo apt update && sudo apt-get install -y postgresql-client python3-pip chromium-browser
 pip install -r requirements.txt
 pip install -r ../pgweb-testing-harness/requirements.txt
 
