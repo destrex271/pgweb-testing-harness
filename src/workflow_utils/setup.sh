@@ -34,4 +34,9 @@ cat pgweb/settings_local.py
 # Load dummy data
 # pgweb/load_initial_data.sh
 
-python manage.py shell <../pgweb-testing-harness/src/functional_tests/test.py
+# functional_tests = ../pgweb-testing-harness/src/functional_tests
+
+for entry in ../pgweb-testing-harness/src/functional_tests/*; do
+	# echo "File is $entry"
+	python manage.py shell <"$entry"
+done
