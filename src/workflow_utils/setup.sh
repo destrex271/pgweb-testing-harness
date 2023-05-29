@@ -6,9 +6,6 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 
 # Clone PGWeb repository
 git clone https://github.com/destrex271/pgweb-testing-harness
-cd pgweb-testing-harness
-git switch chromedriver_fix
-cd ..
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
