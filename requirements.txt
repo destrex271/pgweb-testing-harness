@@ -1,3 +1,3 @@
 Django
 selenium
-webdriver-manager
+webdriver_manager
