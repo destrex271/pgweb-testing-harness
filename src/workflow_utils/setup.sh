@@ -54,3 +54,5 @@ done
 
 # Run all the tests
 python manage.py test --pattern="tests_*.py"
+# Version
+firefox --version
