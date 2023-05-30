@@ -17,7 +17,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: pgweb
+          POSTGRES_DB: pgs
         ports:
           - 5432:5432
         options: >-
@@ -30,6 +30,7 @@ jobs:
     steps:
       - name: Checkout Current Repository
         uses: actions/checkout@v3
+        clean: false
       - name:
         run: ls
       - name: Clone and shift tests
