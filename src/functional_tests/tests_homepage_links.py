@@ -16,21 +16,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         options = webdriver.FirefoxOptions()
         options.headless = True
         cls.selenium = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
-        # chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-        # chrome_options = Options()
-        # options = [
-        #     "--no-sandbox",
-        #     "--headless",
-        #     "--disable-gpu",
-        #     "--window-size=1920,1200",
-        #     "--ignore-certificate-errors",
-        #     "--disable-extensions",
-        #     # "--disable-dev-shm-usage"
-        # ]
-        # for option in options:
-        #     chrome_options.add_argument(option)
-        #
-        # cls.selenium = webdriver.Chrome(service=chrome_service, options=chrome_options)
         cls.selenium.implicitly_wait(10)
 
     @classmethod
