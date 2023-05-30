@@ -41,7 +41,7 @@ cat pgweb/settings_local.py
 # psql -d pgweb -f sql/varnish_local.sql
 
 # Load dummy data
-yes | pgweb/load_initial_data.sh
+# yes | pgweb/load_initial_data.sh
 
 # functional_tests = ../pgweb-testing-harness/src/functional_tests
 

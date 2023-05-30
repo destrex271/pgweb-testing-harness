@@ -2,6 +2,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.by import By
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
+import urllib
 
 class MySeleniumTests(StaticLiveServerTestCase):
 
@@ -20,6 +21,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
     def test_home_page_links(self):
         self.selenium.get(f"{self.live_server_url}/")
-        links = self.selenium.find_element(By.TAG_NAME, "a")
-        print(links)
-
+        links = self.selenium.find_elements(By.TAG_NAME, "a")
+        for link in links:
+            txt = link.get_attribute("href")
+            x = urllib.request.urlopen(txt)
+            print(x.getcode())
+        assert len(links) != 0
