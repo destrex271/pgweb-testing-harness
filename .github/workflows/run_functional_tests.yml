@@ -28,9 +28,8 @@ jobs:
 
 
     steps:
-      - name: Checkout Current Repository
-        uses: actions/checkout@v3
-
+      - name:
+        run: ls
       - name: Clone and shift tests
         run: |
           cd src/workflow_utils
