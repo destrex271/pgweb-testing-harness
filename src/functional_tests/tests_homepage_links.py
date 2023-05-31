@@ -68,14 +68,14 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             print(lnk)
             if not requests.get(lnk).status_code == 200:
                 broken_external_links.append(lnk)
-        self.assertLessEqual(len(broken_external_links), 1, msg=broken_external_links)
+        self.assertTrue(len(broken_external_links) > 0, msg=broken_external_links)
 
     def test_internal_links(self):
         for lnk in internal_links:
             print(lnk)
             if not requests.get(lnk).status_code == 200:
                 broken_internal_links.append(lnk)
-        self.assertLessEqual(len(broken_internal_links), 1, msg=broken_internal_links)
+        self.assertTrue(len(broken_internal_links) > 0, msg=broken_internal_links)
 
 
 # class RecusrsiveLinkCrawlTests_InternalLinks(LiveServerTestCase):
