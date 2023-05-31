@@ -1,3 +1,4 @@
 Django
 selenium
 webdriver-manager
+django-postgres-delete-cascade

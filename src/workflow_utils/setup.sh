@@ -1,6 +1,7 @@
 # Settings for settings_local.py
 conf='DEBUG=True\nSITE_ROOT="http://localhost:8000"\nSESSION_COOKIE_SECURE=False\nSESSION_COOKIE_DOMAIN=None\nCSRF_COOKIE_SECURE=False\nCSRF_COOKIE_DOMAIN=None\nALLOWED_HOSTS=["*"]'
-database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql_psycopg2',\n\t\t'NAME': 'pgs',\n\t\t'PORT': 5432,\n\t\t'PASSWORD': 'postgres',\n\t\t'HOST' : 'localhost',\n\t\t'USER': 'postgres'\n\t}\n}"
+database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql',\n\t\t'NAME': 'pgs',\n\t\t'PORT': 5432,\n\t\t'PASSWORD': 'postgres',\n\t\t'HOST' : 'localhost',\n\t\t'USER': 'postgres'\n\t}\n}"
+# database = "DATABASES={\n\t'default' : {\n\t\t'ENGINE': 'django.db.backends.sqlite3','NAME':'db'}}"
 
 # ------------------------------
 
@@ -27,6 +28,7 @@ echo -e $database >>pgweb/settings_local.py
 cat pgweb/settings_local.py
 
 # Migrations
+./manage.py makemigrations
 ./manage.py migrate
 
 # Test scripts
@@ -40,4 +42,5 @@ for entry in ../../functional_tests/*; do
 done
 
 # Run all the tests
-python manage.py test --pattern="tests_*.py" # --liveserver localhost:8081
+export DJANGO_SETTINGS_MODULE=pgweb.settings
+python manage.py test --pattern="tests_*.py" --keepdb # --liveserver localhost:8081
