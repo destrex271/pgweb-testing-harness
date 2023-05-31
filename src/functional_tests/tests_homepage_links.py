@@ -5,6 +5,10 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 import requests
 
+# Custom utilities
+from pgweb.utils.report_generation import write_to_report
+
+# Fix for CASCADE TRUNCATE FK error
 def _fixture_teardown(self):
     # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
     # when flushing only a subset of the apps
@@ -30,11 +34,12 @@ def _fixture_teardown(self):
         )
 
 LiveServerTestCase._fixture_teardown = _fixture_teardown
+# ---------------------------
 
 external_links = []
 internal_links = []
-broken_internal_links = []
-broken_external_links = []
+broken_internal_links = {}
+broken_external_links = {}
 
 
 def segregate_links(seln, addr):
@@ -42,7 +47,7 @@ def segregate_links(seln, addr):
     links = seln.find_elements(By.TAG_NAME, 'a')
     for link in links:
         lnk = link.get_attribute('href')
-        if lnk.__contains__('localhost'):
+        if lnk.__contains__('localhost'): 
             internal_links.append(lnk)
         else:
             external_links.append(lnk)
@@ -66,16 +71,24 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
     def test_external_links(self):
         for lnk in external_links:
             print(lnk)
-            if not requests.get(lnk).status_code == 200:
-                broken_external_links.append(lnk)
-        self.assertTrue(len(broken_external_links) > 0, msg=broken_external_links)
+            stat = requests.get(lnk).status_code; 
+            if not stat == 200:
+                broken_external_links[lnk] = stat
+        print(broken_external_links)
+        if len(broken_external_links) > 0:
+            write_to_report(broken_external_links, "Broken External Urls")
+        self.assertTrue(len(broken_external_links) == 0, msg=broken_external_links)
 
     def test_internal_links(self):
         for lnk in internal_links:
             print(lnk)
-            if not requests.get(lnk).status_code == 200:
-                broken_internal_links.append(lnk)
-        self.assertTrue(len(broken_internal_links) > 0, msg=broken_internal_links)
+            stat = requests.get(lnk).status_code; 
+            if not stat == 200:
+                broken_internal_links[lnk] = stat
+        print(broken_internal_links)
+        if len(broken_internal_links) > 0:
+            write_to_report(broken_internal_links, "Broken External Urls")
+        self.assertTrue(len(broken_internal_links) == 0, msg=broken_internal_links)
 
 
 # class RecusrsiveLinkCrawlTests_InternalLinks(LiveServerTestCase):
