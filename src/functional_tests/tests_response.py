@@ -1,8 +1,8 @@
 from django.test.testcases import TestCase 
 from django.test import Client
-# These tests check whether or not all the primary views of the website are up or not
 from pgweb import urls
 
+# These tests check whether or not all the primary views of the website are up or not
 def check_response(res):
     return res.status_code == 200
 
@@ -10,8 +10,7 @@ class ResponseTest(TestCase):
 
     def setUp(self) -> None:
         self.client = Client()
-        # print(urls.urlpatterns)
-
+        
     def test_home_response(self):
         res = self.client.get("/")
         self.assertTrue(check_response(res))
