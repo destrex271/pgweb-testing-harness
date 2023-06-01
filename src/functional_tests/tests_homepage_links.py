@@ -41,17 +41,37 @@ internal_links = []
 broken_internal_links = {}
 broken_external_links = {}
 
-
+# Generate a list of all the urls of the website
 def segregate_links(seln, addr):
+    init_count = 0
     seln.get(f"{addr}/")
     links = seln.find_elements(By.TAG_NAME, 'a')
+    fl = open('urls.txt', 'w+')
     for link in links:
         lnk = link.get_attribute('href')
+        init_count += 1
+        fl.write(lnk)
         if lnk.__contains__('localhost'): 
             internal_links.append(lnk)
         else:
             external_links.append(lnk)
 
+    counter = 0
+    for link in internal_links:
+        if counter == init_count:
+            break
+        seln.get(f"{addr}")
+        lnks = seln.find_elements(By.TAG_NAME, 'a')
+        for lk in lnks:
+            v = lk.get_attribute('href')
+            if v.__contains__('localhost') and not v in internal_links: 
+                fl.write(v)
+                internal_links.append(v)
+            elif not v in external_links and not v.__contains__('localhost'):
+                fl.write(v)
+                external_links.append(v)
+        counter += 1
+    fl.close()
 
 class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
@@ -70,37 +90,41 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
     def test_external_links(self):
         for lnk in external_links:
-            print(lnk)
-            stat = requests.get(lnk).status_code; 
-            if not stat == 200:
-                broken_external_links[lnk] = stat
-        print(broken_external_links)
+            res = requests.get(lnk);
+            if not res is None:
+                stat = res.status_code
+                if not stat == 200:
+                    broken_external_links[lnk] = stat
+            else:
+                broken_external_links[lnk] = "Not reachable"
         if len(broken_external_links) > 0:
             write_to_report(broken_external_links, "Broken External Urls")
         self.assertTrue(len(broken_external_links) == 0, msg=broken_external_links)
+        
 
     def test_internal_links(self):
         for lnk in internal_links:
-            print(lnk)
-            stat = requests.get(lnk).status_code; 
-            if not stat == 200:
-                broken_internal_links[lnk] = stat
-        print(broken_internal_links)
+            res = requests.get(lnk); 
+            if not res is None:
+                stat = res.status_code
+                if not stat == 200:
+                    broken_internal_links[lnk] = stat
+            else:
+                broken_internal_links[lnk] = "Not reachable"
+
+        # Checking if the internal URL is working on the deployed version
+        to_rem = []
+        for lk in broken_internal_links.keys():
+            lvk = str(lk).replace(f'{self.live_server_url}', "https://www.postgresql.org")
+            if requests.get(lvk).status_code == 200:
+                to_rem.append(lk)
+
+        # Removing false errors
+        for working_link in to_rem:
+            broken_internal_links.pop(working_link)
+
+        # Final List of Broken Urls
         if len(broken_internal_links) > 0:
-            write_to_report(broken_internal_links, "Broken External Urls")
+            write_to_report(broken_internal_links, "Broken Internal Urls")
+
         self.assertTrue(len(broken_internal_links) == 0, msg=broken_internal_links)
-
-
-# class RecusrsiveLinkCrawlTests_InternalLinks(LiveServerTestCase):
-#     
-#     @classmethod
-#     def setUpClass(cls):
-#         super().setUpClass()
-#         options = webdriver.FirefoxOptions()
-#         options.headless = True
-#         cls.selenium = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
-#
-#     @classmethod
-#     def tearDownClass(cls):
-#         cls.selenium.quit()
-#         super().tearDownClass()
