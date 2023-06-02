@@ -127,4 +127,6 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         if len(broken_internal_links) > 0:
             write_to_report(broken_internal_links, "Broken Internal Urls")
 
+        fl = open('urls.txt', 'w+')
+        print(fl.readlines())
         self.assertTrue(len(broken_internal_links) == 0, msg=broken_internal_links)
