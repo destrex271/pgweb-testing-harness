@@ -19,7 +19,7 @@ pip install -r requirements.txt
 pip install -r ../../../requirements.txt
 
 # Create Database
-psql -h localhost -U postgres --password postgres -c "CREATE DATABASE pmgs;"
+PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE pmgs;"
 
 # Add Local Settings
 touch pgweb/settings_local.py
