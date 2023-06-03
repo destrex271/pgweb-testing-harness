@@ -9,6 +9,8 @@ import requests
 from pgweb.utils.report_generation import write_to_report
 
 # Fix for CASCADE TRUNCATE FK error
+
+
 def _fixture_teardown(self):
     # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
     # when flushing only a subset of the apps
@@ -33,6 +35,7 @@ def _fixture_teardown(self):
             inhibit_post_migrate=inhibit_post_migrate,
         )
 
+
 LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
@@ -42,6 +45,8 @@ broken_internal_links = {}
 broken_external_links = {}
 
 # Generate a list of all the urls of the website
+
+
 def segregate_links(seln, addr):
     init_count = 0
     seln.get(f"{addr}/")
@@ -51,7 +56,7 @@ def segregate_links(seln, addr):
         lnk = link.get_attribute('href')
         init_count += 1
         fl.write(lnk)
-        if lnk.__contains__('localhost'): 
+        if lnk.__contains__('localhost'):
             internal_links.append(lnk)
         else:
             external_links.append(lnk)
@@ -64,7 +69,7 @@ def segregate_links(seln, addr):
         lnks = seln.find_elements(By.TAG_NAME, 'a')
         for lk in lnks:
             v = lk.get_attribute('href')
-            if v.__contains__('localhost') and not v in internal_links: 
+            if v.__contains__('localhost') and not v in internal_links:
                 fl.write(v)
                 internal_links.append(v)
             elif not v in external_links and not v.__contains__('localhost'):
@@ -73,6 +78,7 @@ def segregate_links(seln, addr):
         counter += 1
     fl.close()
 
+
 class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
     @classmethod
@@ -80,7 +86,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
-        cls.selenium = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+        cls.selenium = webdriver.Firefox(
+            executable_path=GeckoDriverManager().install(), options=options)
         segregate_links(cls.selenium, cls.live_server_url)
 
     @classmethod
@@ -90,7 +97,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
     def test_external_links(self):
         for lnk in external_links:
-            res = requests.get(lnk);
+            res = requests.get(lnk)
             if not res is None:
                 stat = res.status_code
                 if not stat == 200:
@@ -99,12 +106,12 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
                 broken_external_links[lnk] = "Not reachable"
         if len(broken_external_links) > 0:
             write_to_report(broken_external_links, "Broken External Urls")
-        self.assertTrue(len(broken_external_links) == 0, msg=broken_external_links)
-        
+        self.assertTrue(len(broken_external_links) ==
+                        0, msg=broken_external_links)
 
     def test_internal_links(self):
         for lnk in internal_links:
-            res = requests.get(lnk); 
+            res = requests.get(lnk)
             if not res is None:
                 stat = res.status_code
                 if not stat == 200:
@@ -115,7 +122,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         # Checking if the internal URL is working on the deployed version
         to_rem = []
         for lk in broken_internal_links.keys():
-            lvk = str(lk).replace(f'{self.live_server_url}', "https://www.postgresql.org")
+            lvk = str(lk).replace(
+                f'{self.live_server_url}', "https://www.postgresql.org")
             if requests.get(lvk).status_code == 200:
                 to_rem.append(lk)
 
@@ -127,6 +135,5 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         if len(broken_internal_links) > 0:
             write_to_report(broken_internal_links, "Broken Internal Urls")
 
-        fl = open('urls.txt', 'w+')
-        print(fl.readlines())
-        self.assertTrue(len(broken_internal_links) == 0, msg=broken_internal_links)
+        self.assertTrue(len(broken_internal_links) ==
+                        0, msg=broken_internal_links)

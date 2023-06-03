@@ -4,7 +4,11 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 
+from django.contrib.auth.models import User
+
 # Fix for CASCADE TRUNCATE FK error
+
+
 def _fixture_teardown(self):
     # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
     # when flushing only a subset of the apps
@@ -29,10 +33,13 @@ def _fixture_teardown(self):
             inhibit_post_migrate=inhibit_post_migrate,
         )
 
+
 LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 # Account creation test
+
+
 class CreateUserAccount(LiveServerTestCase):
 
     @classmethod
@@ -40,7 +47,12 @@ class CreateUserAccount(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
-        cls.selenium = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+        cls.selenium = webdriver.Firefox(
+            executable_path=GeckoDriverManager().install(), options=options)
+        cls.username = "testuser"
+        cls.firstname = "test"
+        cls.lastname = "user"
+        cls.email = "testuser@gmail.com"
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -53,24 +65,34 @@ class CreateUserAccount(LiveServerTestCase):
         print(self.live_server_url + create_addr)
         self.selenium.get(self.live_server_url + create_addr)
         username_field = self.selenium.find_element(By.ID, prefix+"username")
-        firstname_field = self.selenium.find_element(By.ID, prefix+"first_name")
-        lastname_field = self.selenium.find_element(By.ID, prefix+"first_name")
-        email_field = self.selenium.find_element(By.ID, prefix+"first_name")
-        email2_field = self.selenium.find_element(By.ID, prefix+"first_name")
-        sub_btn = self.selenium.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/form/button')
+        firstname_field = self.selenium.find_element(
+            By.ID, prefix+"first_name")
+        lastname_field = self.selenium.find_element(By.ID, prefix+"last_name")
+        email_field = self.selenium.find_element(By.ID, prefix+"email")
+        email2_field = self.selenium.find_element(By.ID, prefix+"email2")
+        sub_btn = self.selenium.find_element(
+            By.XPATH, '/html/body/div[2]/div/div[2]/div/form/button')
 
-        username_field.send_keys("test_user123")
-        firstname_field.send_keys("test")
-        lastname_field.send_keys("user")
-        email_field.send_keys("testuser@gmail.com")
-        email2_field.send_keys("testuser@gmail.com")
+        username_field.send_keys(self.username)
+        firstname_field.send_keys(self.firstname)
+        lastname_field.send_keys(self.lastname)
+        email_field.send_keys(self.email)
+        email2_field.send_keys(self.email)
 
         sub_btn.click()
-        self.selenium.implicitly_wait(10)
 
-        # Check if "Account Created" page was loaded
+        # Check for successfull completion and redirection
+        print(self.selenium.current_url)
+        self.assertTrue(self.selenium.current_url !=
+                        self.live_server_url + create_addr)
 
-        heading = self.selenium.find_element(By.TAG_NAME, 'h1')
-        print(heading.get_attribute('value'))
-        self.assertTrue(heading == "Account created")
-        
+        # Query the Database to check if the user was actually registered
+        usr = User.objects.filter(
+            username=self.username,
+            first_name=self.firstname,
+            last_name=self.lastname,
+            email=self.email,
+        )
+
+        print(usr)
+        self.assertTrue(len(usr) == 1)
