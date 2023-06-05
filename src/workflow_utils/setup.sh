@@ -38,7 +38,7 @@ functional_tests = ../../functional_tests
 
 for entry in ../../functional_tests/*; do
 	echo "$entry"
-	cp "$entry" pgweb/
+	cp -r "$entry" pgweb/
 done
 
 cp -r ../../utils pgweb/

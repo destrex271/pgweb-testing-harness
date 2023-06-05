@@ -1,0 +1,56 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "9edab0a63a8e096c71b5d9c19f9a19206c8be78c5ed7590ea906f19e2cb910f0",
+      "last_login": "2023-06-03T07:23:46.123",
+      "is_superuser": false,
+      "username": "akshat",
+      "first_name": "akshat",
+      "last_name": "jaimini",
+      "email": "ajaimini_be21@thapar.edu",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2023-06-03T07:23:46.123",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$Kr6ZL5qi4Gu1CxrOVKgNr3$0PwBjFa7uIFEbZikZsNiYUH4iihhfiKDkavn7GM0p0c=",
+      "last_login": "2023-06-03T09:01:55.304",
+      "is_superuser": true,
+      "username": "root",
+      "first_name": "",
+      "last_name": "",
+      "email": "root@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2023-06-03T07:40:59.862",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "password": "0039ded66b2b3b791b9729860fbcf06a61cbd1d223526935f243fde7ac9e3310",
+      "last_login": "2023-06-03T08:21:35.563",
+      "is_superuser": false,
+      "username": "testuser",
+      "first_name": "test",
+      "last_name": "user",
+      "email": "testuser@gmail.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2023-06-03T08:21:35.564",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
