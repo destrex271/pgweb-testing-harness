@@ -5,6 +5,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 
 from django.contrib.auth.models import User
+from string import punctuation
 
 # Fix for CASCADE TRUNCATE FK error
 
@@ -75,6 +76,7 @@ class CreateUserAccount(LiveServerTestCase):
         sub_btn = self.selenium.find_element(
             By.XPATH, '/html/body/div[2]/div/div[2]/div/form/button')
 
+        # Automation Sequence
         username_field.send_keys(self.username)
         firstname_field.send_keys(self.firstname)
         lastname_field.send_keys(self.lastname)
@@ -84,7 +86,6 @@ class CreateUserAccount(LiveServerTestCase):
         sub_btn.click()
 
         # Check for successfull completion and redirection
-        print(self.selenium.current_url)
         self.assertNotEqual(self.selenium.current_url,
                             self.live_server_url + self.create_addr)
 
@@ -95,15 +96,120 @@ class CreateUserAccount(LiveServerTestCase):
             last_name=self.lastname,
             email=self.email,
         )
-        user = usr.first()
-        # Assign password manually; Cannot utilize the email prop
-        user.set_password(self.passwd)
         self.assertEqual(len(usr), 1)
+
+    def test_account_creation_invalid_username(self):
+        # Generating a set of all special chars to generate an invalid username
+        sequences = set(punctuation)
+        sequences.remove('-')
+        sequences.remove('.')
+        for x in sequences:
+            self.selenium.get(self.live_server_url + self.create_addr)
+            username_field = self.selenium.find_element(
+                By.ID, self.prefix+"username")
+            firstname_field = self.selenium.find_element(
+                By.ID, self.prefix+"first_name")
+            lastname_field = self.selenium.find_element(
+                By.ID, self.prefix+"last_name")
+            email_field = self.selenium.find_element(
+                By.ID, self.prefix+"email")
+            email2_field = self.selenium.find_element(
+                By.ID, self.prefix+"email2")
+            sub_btn = self.selenium.find_element(
+                By.XPATH, '/html/body/div[2]/div/div[2]/div/form/button')
+
+            # Automation Sequence
+            username_field.send_keys(self.username + x)
+            firstname_field.send_keys(self.firstname)
+            lastname_field.send_keys(self.lastname)
+            email_field.send_keys(self.email)
+            email2_field.send_keys(self.email)
+
+            sub_btn.click()
+
+            # Check user registration status
+            self.assertEqual(self.selenium.current_url,
+                             self.live_server_url+self.create_addr)
+
+            # Checking Alert messages
+            alert = self.selenium.find_elements(By.CLASS_NAME, "alert")
+            self.assertEqual(
+                alert[0].text, "Please correct the errors below, and re-submit the form.")
+            self.assertEqual(
+                alert[1].text, "Invalid character in user name. Only a-z, 0-9, . and - allowed for compatibility with third party software.")
+
+            # Check for any entries in Database
+            usrs = User.objects.filter(username=self.username + x)
+            self.assertEqual(len(usrs), 0)
+
+    def test_create_account_diff_emails(self):
+        self.selenium.get(self.live_server_url + self.create_addr)
+        username_field = self.selenium.find_element(
+            By.ID, self.prefix+"username")
+        firstname_field = self.selenium.find_element(
+            By.ID, self.prefix+"first_name")
+        lastname_field = self.selenium.find_element(
+            By.ID, self.prefix+"last_name")
+        email_field = self.selenium.find_element(By.ID, self.prefix+"email")
+        email2_field = self.selenium.find_element(By.ID, self.prefix+"email2")
+        sub_btn = self.selenium.find_element(
+            By.XPATH, '/html/body/div[2]/div/div[2]/div/form/button')
+
+        # Automation Sequence
+        username_field.send_keys(self.username)
+        firstname_field.send_keys(self.firstname)
+        lastname_field.send_keys(self.lastname)
+        email_field.send_keys(self.email)
+        email2_field.send_keys("$%dif" + self.email)
+
+        sub_btn.click()
+
+        # Check for successfull completion and redirection
+        self.assertEqual(self.selenium.current_url,
+                         self.live_server_url + self.create_addr)
+
+        # Check for alerts
+        alerts = self.selenium.find_elements(By.CLASS_NAME, "alert")
+        self.assertEqual(
+            alerts[0].text, "Please correct the errors below, and re-submit the form.")
+        self.assertEqual(alerts[1].text, "Email addresses don't match")
+
+        # Check for any wrong entries in the database
+        users = User.objects.filter(username=self.username)
+        self.assertEqual(len(users), 0)
+
+    def test_create_account_invalid_email(self):
+        self.selenium.get(self.live_server_url + self.create_addr)
+        username_field = self.selenium.find_element(
+            By.ID, self.prefix+"username")
+        firstname_field = self.selenium.find_element(
+            By.ID, self.prefix+"first_name")
+        lastname_field = self.selenium.find_element(
+            By.ID, self.prefix+"last_name")
+        email_field = self.selenium.find_element(By.ID, self.prefix+"email")
+        email2_field = self.selenium.find_element(By.ID, self.prefix+"email2")
+        sub_btn = self.selenium.find_element(
+            By.XPATH, '/html/body/div[2]/div/div[2]/div/form/button')
+
+        # Automation Sequence
+        username_field.send_keys(self.username)
+        firstname_field.send_keys(self.firstname)
+        lastname_field.send_keys(self.lastname)
+        email_field.send_keys(self.email.replace("@", ""))
+        email2_field.send_keys("$%dif" + self.email)
+
+        sub_btn.click()
+
+        # Check for successfull completion and redirection
+        self.assertEqual(self.selenium.current_url,
+                         self.live_server_url + self.create_addr)
+
+        # Check for any wrong entries in the database
+        users = User.objects.filter(username=self.username)
+        self.assertEqual(len(users), 0)
 
 
 class UserLoginTests(LiveServerTestCase):
-
-    # fixtures = ["pgweb/fixtures/users.json"]
 
     @classmethod
     def setUpClass(cls):
