@@ -53,23 +53,25 @@ class CreateUserAccount(LiveServerTestCase):
         cls.firstname = "test"
         cls.lastname = "user"
         cls.email = "testuser@gmail.com"
+        cls.passwd = "test123@#"
+        cls.prefix = "id_"
+        cls.create_addr = "/account/signup/"
 
     @classmethod
     def tearDownClass(cls) -> None:
         cls.selenium.quit()
         super().tearDownClass()
 
-    def test_create_account(self):
-        create_addr = "/account/signup/"
-        prefix = "id_"
-        print(self.live_server_url + create_addr)
-        self.selenium.get(self.live_server_url + create_addr)
-        username_field = self.selenium.find_element(By.ID, prefix+"username")
+    def test_create_account_with_valid_parmas(self):
+        self.selenium.get(self.live_server_url + self.create_addr)
+        username_field = self.selenium.find_element(
+            By.ID, self.prefix+"username")
         firstname_field = self.selenium.find_element(
-            By.ID, prefix+"first_name")
-        lastname_field = self.selenium.find_element(By.ID, prefix+"last_name")
-        email_field = self.selenium.find_element(By.ID, prefix+"email")
-        email2_field = self.selenium.find_element(By.ID, prefix+"email2")
+            By.ID, self.prefix+"first_name")
+        lastname_field = self.selenium.find_element(
+            By.ID, self.prefix+"last_name")
+        email_field = self.selenium.find_element(By.ID, self.prefix+"email")
+        email2_field = self.selenium.find_element(By.ID, self.prefix+"email2")
         sub_btn = self.selenium.find_element(
             By.XPATH, '/html/body/div[2]/div/div[2]/div/form/button')
 
@@ -83,8 +85,8 @@ class CreateUserAccount(LiveServerTestCase):
 
         # Check for successfull completion and redirection
         print(self.selenium.current_url)
-        self.assertTrue(self.selenium.current_url !=
-                        self.live_server_url + create_addr)
+        self.assertNotEqual(self.selenium.current_url,
+                            self.live_server_url + self.create_addr)
 
         # Query the Database to check if the user was actually registered
         usr = User.objects.filter(
@@ -93,6 +95,107 @@ class CreateUserAccount(LiveServerTestCase):
             last_name=self.lastname,
             email=self.email,
         )
+        user = usr.first()
+        # Assign password manually; Cannot utilize the email prop
+        user.set_password(self.passwd)
+        self.assertEqual(len(usr), 1)
 
-        print(usr)
-        self.assertTrue(len(usr) == 1)
+
+class UserLoginTests(LiveServerTestCase):
+
+    # fixtures = ["pgweb/fixtures/users.json"]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        options = webdriver.FirefoxOptions()
+        options.headless = True
+        cls.selenium = webdriver.Firefox(
+            executable_path=GeckoDriverManager().install(), options=options)
+        cls.username = "root"
+        cls.email = "root@gmail.com"
+        cls.passwd = "root"
+        cls.login_path = "/account/login/"
+        cls.prefix = "id_"
+        call_command('loaddata', 'pgweb/fixtures/users.json')
+        print("Loaded fixtures")
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.selenium.quit()
+        super().tearDownClass()
+
+    def test_registered_account_login(self):
+        self.selenium.get(self.live_server_url + self.login_path)
+        # Capturing DOM elements
+        username_field = self.selenium.find_element(
+            By.ID, self.prefix + "username")
+        passwd_field = self.selenium.find_element(
+            By.ID, self.prefix + "password")
+        sub_btn = self.selenium.find_element(
+            By.XPATH, "/html/body/div[2]/div/div[2]/div/form/div[3]/input")
+
+        # Automation sequence
+        username_field.send_keys(self.username)
+        passwd_field.send_keys(self.passwd)
+        sub_btn.click()
+
+        self.assertEqual(self.selenium.current_url,
+                         self.live_server_url + "/account/")
+
+        heading = self.selenium.find_element(By.TAG_NAME, 'h1')
+        self.assertEqual(heading.text, "Your account")
+
+    def test_unregistered_account_login(self):
+        self.selenium.get(self.live_server_url + self.login_path)
+        # Capturing fields on webpage
+        username_field = self.selenium.find_element(
+            By.ID, self.prefix+"username"
+        )
+        passwd_field = self.selenium.find_element(
+            By.ID, self.prefix + "password"
+        )
+        sub_btn = self.selenium.find_element(
+            By.XPATH, "/html/body/div[2]/div/div[2]/div/form/div[3]/input")
+
+        # Automation Sequence
+        username_field.send_keys("abcdefg")
+        passwd_field.send_keys("password123#")
+        sub_btn.click()
+
+        self.assertEqual(self.selenium.current_url,
+                         self.live_server_url + self.login_path)
+
+        heading = self.selenium.find_element(By.TAG_NAME, 'h1')
+        self.assertEqual(heading.text, "Sign in")
+
+        alert = self.selenium.find_element(By.CLASS_NAME, 'alert')
+        self.assertEqual(
+            alert.text, "Please enter a correct username and password. Note that both fields may be case-sensitive.")
+
+    def test_registered_account_wrong_password_login(self):
+        self.selenium.get(self.live_server_url + self.login_path)
+        # Capturing fields on webpage
+        username_field = self.selenium.find_element(
+            By.ID, self.prefix+"username"
+        )
+        passwd_field = self.selenium.find_element(
+            By.ID, self.prefix + "password"
+        )
+        sub_btn = self.selenium.find_element(
+            By.XPATH, "/html/body/div[2]/div/div[2]/div/form/div[3]/input")
+
+        # Automation Sequence
+        username_field.send_keys(self.username)
+        passwd_field.send_keys("passwrd123#")
+        sub_btn.click()
+
+        self.assertEqual(self.selenium.current_url,
+                         self.live_server_url + self.login_path)
+
+        heading = self.selenium.find_element(By.TAG_NAME, 'h1')
+        self.assertEqual(heading.text, "Sign in")
+
+        alert = self.selenium.find_element(By.CLASS_NAME, 'alert')
+        self.assertEqual(
+            alert.text, "Please enter a correct username and password. Note that both fields may be case-sensitive.")
