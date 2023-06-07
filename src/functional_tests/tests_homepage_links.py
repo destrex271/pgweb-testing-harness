@@ -86,8 +86,17 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
+        print("RUNINNGGG!")
         cls.selenium = webdriver.Firefox(
             executable_path=GeckoDriverManager().install(), options=options)
+        call_command('loaddata', 'pgweb/core/fixtures/data.json')
+        call_command('loaddata', 'pgweb/docs/fixtures/data.json')
+        call_command('loaddata', 'pgweb/lists/fixtures/data.json')
+        call_command('loaddata', 'pgweb/sponsors/fixtures/data.json')
+        call_command('loaddata', 'pgweb/downloads/fixtures/data.json')
+        call_command('loaddata', 'pgweb/contributors/fixtures/data.json')
+        call_command('loaddata', 'pgweb/featurematrix/fixtures/data.json')
+        print("Fixtures Loaded")
         segregate_links(cls.selenium, cls.live_server_url)
 
     @classmethod

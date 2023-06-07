@@ -252,6 +252,27 @@ class UserLoginTests(LiveServerTestCase):
         heading = self.selenium.find_element(By.TAG_NAME, 'h1')
         self.assertEqual(heading.text, "Your account")
 
+    # def test_registered_account_login_with_email(self):
+    #     self.selenium.get(self.live_server_url + self.login_path)
+    #     # Capturing DOM elements
+    #     username_field = self.selenium.find_element(
+    #         By.ID, self.prefix + "username")
+    #     passwd_field = self.selenium.find_element(
+    #         By.ID, self.prefix + "password")
+    #     sub_btn = self.selenium.find_element(
+    #         By.XPATH, "/html/body/div[2]/div/div[2]/div/form/div[3]/input")
+    #
+    #     # Automation sequence
+    #     username_field.send_keys(self.email)
+    #     passwd_field.send_keys(self.passwd)
+    #     sub_btn.click()
+    #
+    #     self.assertEqual(self.selenium.current_url,
+    #                      self.live_server_url + "/account/")
+    #
+    #     heading = self.selenium.find_element(By.TAG_NAME, 'h1')
+    #     self.assertEqual(heading.text, "Your account")
+
     def test_unregistered_account_login(self):
         self.selenium.get(self.live_server_url + self.login_path)
         # Capturing fields on webpage

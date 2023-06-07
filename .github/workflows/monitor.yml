@@ -1,0 +1,12 @@
+on:
+  schedule:
+    - cron: '* * * *'
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Monitor Script
+        run: |-
+          chmod +x ./src/monitor_unit/monitor.sh
+          ./src/monitor_unit/monitor.sh
