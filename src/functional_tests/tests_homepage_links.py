@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 import requests
+from selenium.webdriver.firefox.service import Service
 
 # Custom utilities
 from pgweb.utils.report_generation import write_to_report
@@ -87,8 +88,9 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         options = webdriver.FirefoxOptions()
         options.headless = True
         print("RUNINNGGG!")
+        serv = Service(executable_path=GeckoDriverManager().install())
         cls.selenium = webdriver.Firefox(
-            executable_path=GeckoDriverManager().install(), options=options)
+            service=serv, options=options)
         call_command('loaddata', 'pgweb/core/fixtures/data.json')
         call_command('loaddata', 'pgweb/docs/fixtures/data.json')
         call_command('loaddata', 'pgweb/lists/fixtures/data.json')

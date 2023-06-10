@@ -1,6 +1,7 @@
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.test.testcases import call_command, connections
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 
@@ -48,8 +49,9 @@ class CreateUserAccount(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
+        serv = Service(executable_path=GeckoDriverManager().install())
         cls.selenium = webdriver.Firefox(
-            executable_path=GeckoDriverManager().install(), options=options)
+            service=serv, options=options)
         cls.username = "testuser"
         cls.firstname = "test"
         cls.lastname = "user"
@@ -216,8 +218,9 @@ class UserLoginTests(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
+        serv = Service(executable_path=GeckoDriverManager().install())
         cls.selenium = webdriver.Firefox(
-            executable_path=GeckoDriverManager().install(), options=options)
+            service=serv, options=options)
         cls.username = "root"
         cls.email = "root@gmail.com"
         cls.passwd = "root"
