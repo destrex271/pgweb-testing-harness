@@ -20,7 +20,7 @@ pip install -r ../../../requirements.txt
 
 # Create Database & add procedures
 PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE pmgs;"
-PGPASSWORD=postgres psql -h localhost -U postgres -d pmgs -f sql/varnish.sql
+PGPASSWORD=postgres psql -h localhost -U postgres -d pmgs -f sql/varnish_local.sql
 
 # Add Local Settings
 touch pgweb/settings_local.py
@@ -37,8 +37,8 @@ sudo chmod +x pgweb/load_initial_data.sh
 yes | pgweb/load_initial_data.sh
 
 for entry in ../../functional_tests/*; do
-    echo "$entry"
-    cp -r "$entry" pgweb/
+	echo "$entry"
+	cp -r "$entry" pgweb/
 done
 
 cp -r ../../utils pgweb/
