@@ -1,3 +1,4 @@
+---
 on:
   push:
     branches: [main]
@@ -17,9 +18,10 @@ jobs:
       - name: Update Commit Value
         run: |-
           chmod +x ./src/monitor_unit/update_commit_value.sh
+          export SECRET_KEY=${{ secrets.SECRET_KEY_2 }}
           ./src/monitor_unit/update_commit_value.sh
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.SECRET_KEY_2 }}
-          branch: ${{ github.ref }}
+    # - name: Push changes
+    #   uses: ad-m/github-push-action@master
+    #   with:
+    #     github_token: ${{ secrets.SECRET_KEY_2 }}
+    #     branch: ${{ github.ref }}

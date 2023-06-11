@@ -20,8 +20,7 @@ cd pgweb
 echo "$strp"
 echo "$(git rev-parse HEAD)"
 if [ "$strp" != "$(git rev-parse HEAD)" ]; then
-	echo "OKKKK"
-	echo "Triggering"
+	echo "Triggering Action"
 	trigger
 fi
 

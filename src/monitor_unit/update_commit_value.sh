@@ -1,3 +1,6 @@
+REPO_NAME="pgweb-testing-harness"
+GITHUB_TOKEN="$SECRET_KEY"
+
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
@@ -14,3 +17,4 @@ git config --global user.email "destrex271@gmail.com"
 
 git add .
 git commit -m "GH Action; Updated commit id"
+git remote set-url origin https://x-access-token:$SECRET_KEY@github.com/$REPO_NAME
