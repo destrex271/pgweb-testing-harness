@@ -60,6 +60,9 @@ def segregate_links(seln, addr):
         fl.write(lnk)
         if lnk.__contains__('localhost'):
             internal_links.append(lnk)
+        elif not str(lnk).startswith("http"):
+            lnk = addr + lnk
+            internal_links.append(lnk)
         else:
             external_links.append(lnk)
 
@@ -152,6 +155,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
     def test_internal_links(self):
         for lnk in internal_links:
+            if lnk.__contains__("doc"):
+                print("\t\t\t\t" + lnk)
             res = requests.get(lnk)
             if not res is None:
                 stat = res.status_code

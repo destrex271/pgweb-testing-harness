@@ -1,4 +1,6 @@
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: 5 * * * *
 jobs:
@@ -9,4 +11,5 @@ jobs:
       - name: Monitor Script
         run: |-
           chmod +x ./src/monitor_unit/monitor.sh
+          export SECRET_KEY=${{ secrets.SECRET_KEY }}
           ./src/monitor_unit/monitor.sh
