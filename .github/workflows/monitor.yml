@@ -18,3 +18,8 @@ jobs:
         run: |-
           chmod +x ./src/monitor_unit/update_commit_value.sh
           ./src/monitor_unit/update_commit_value.sh
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.SECRET_KEY }}
+          branch: ${{ github.ref }}
