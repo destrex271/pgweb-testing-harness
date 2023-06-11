@@ -7,7 +7,7 @@ jobs:
   monitor:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       # - name: Get artifact value
       #   uses: actions/download-artifact@v2
       #   with:
