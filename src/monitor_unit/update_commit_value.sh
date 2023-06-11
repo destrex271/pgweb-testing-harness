@@ -12,6 +12,5 @@ git add .
 git config --global user.name "destrex271"
 git config --global user.email "destrex271@gmail.com"
 
-git add -A
+git add .
 git commit -m "GH Action; Updated commit id"
-git push
