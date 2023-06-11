@@ -1,10 +1,11 @@
 from django.contrib.staticfiles.testing import LiveServerTestCase
-from django.test.testcases import call_command, connections
+from django.test.testcases import call_command, connection, connections
 from selenium.webdriver.common.by import By
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 import requests
 from selenium.webdriver.firefox.service import Service
+from django.db import connection
 
 # Custom utilities
 from pgweb.utils.report_generation import write_to_report
@@ -87,8 +88,37 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
-        print("RUNINNGGG!")
         serv = Service(executable_path=GeckoDriverManager().install())
+
+        # Mannually running varnish cache sim code
+        cursor = connections["default"].cursor()
+        cursor.execute('''
+            BEGIN;
+
+            --
+            -- "cheating" version of the varnish_purge() function
+            -- that can be used on a local installation that doesn't
+            -- have any frontends.
+            --
+
+            CREATE OR REPLACE FUNCTION varnish_purge(url text)
+            RETURNS void
+            AS $$
+            $$ LANGUAGE 'sql';
+
+            CREATE OR REPLACE FUNCTION varnish_purge_expr(expr text)
+            RETURNS void
+            AS $$
+            $$ LANGUAGE 'sql';
+
+            CREATE OR REPLACE FUNCTION varnish_purge_xkey(key text)
+            RETURNS void
+            AS $$
+            $$ LANGUAGE 'sql';
+
+            COMMIT;''')
+        cursor.close()
+
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
         call_command('loaddata', 'pgweb/core/fixtures/data.json')
