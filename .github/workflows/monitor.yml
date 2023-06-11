@@ -7,24 +7,24 @@ jobs:
   monitor:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Get artifact value
-        uses: actions/download-artifact@v2
-        with:
-          name: commit-id
-          path: ./prev-commit.txt
+      # - uses: actions/checkout@v3
+      # - name: Get artifact value
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: commit-id
+      #     path: ./prev-commit.txt
       - name: Update Commit Value
         run: |-
           echo "Ok"
           chmod +x ./src/monitor_unit/get_commit_value.sh
           # export SECRET_KEY=${{ secrets.SECRET_KEY }}
           ./src/monitor_unit/get_commit_value.sh
-          prev = $( cat ./prev-commit.txt )
+          # prev = $( cat ./prev-commit.txt )
           cur = $( cat ./commit_id.txt )
-          if [[ "$prev" == "$cur" ]] then
-            echo "No change!"
-          else
-            echo "Change!"
+          # if [[ "$prev" == "$cur" ]] then
+          #   echo "No change!"
+          # else
+          #   echo "Change!"
       - uses: actions/upload-artifact@v2
         with:
           name: commit-id
