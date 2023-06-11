@@ -12,7 +12,7 @@ jobs:
         run: |-
           ls ./src/monitor_unit
           chmod +x ./src/monitor_unit/compare_commits.sh
-          export SECRET_KEY=${{ secrets.SECRET_KEY }}
+          export SECRET_KEY=${{ secrets.SECRET_KEY_2 }}
           ./src/monitor_unit/compare_commits.sh
       - name: Update Commit Value
         run: |-
@@ -21,5 +21,5 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.SECRET_KEY }}
+          github_token: ${{ secrets.SECRET_KEY_2 }}
           branch: ${{ github.ref }}
