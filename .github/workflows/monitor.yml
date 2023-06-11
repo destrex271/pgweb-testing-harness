@@ -8,22 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Get artifact value
-        uses: actions/download-artifact@v3
-        with:
-          name: commit-id
+      # - name: Get artifact value
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: commit-id
       - name: Update Commit Value
         run: |-
           chmod +x ./src/monitor_unit/get_commit_value.sh
           chmod +x ./src/monitor_unit/trigger_workflow.sh
           export SECRET_KEY=${{ secrets.SECRET_KEY }}
           ./src/monitor_unit/get_commit_value.sh
-          cat ./prev-commit.txt
+          # cat ./prev-commit.txt
           cat ./commit_id.txt
-          if cmp -s "$file1" "$file2"; then
-            echo "No changes!"
-          else
-            ./src/monitor_unit/trigger_workflow.sh
+          # if cmp -s "$file1" "$file2"; then
+          #   echo "No changes!"
+          # else
+          #   ./src/monitor_unit/trigger_workflow.sh
           # if [[ "$prev" == "$cur" ]] then
           #   echo "No change!"
           # else
