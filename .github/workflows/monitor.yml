@@ -15,7 +15,6 @@ jobs:
       #     path: ./prev-commit.txt
       - name: Update Commit Value
         run: |-
-          echo "Ok"
           chmod +x ./src/monitor_unit/get_commit_value.sh
           # export SECRET_KEY=${{ secrets.SECRET_KEY }}
           ./src/monitor_unit/get_commit_value.sh
