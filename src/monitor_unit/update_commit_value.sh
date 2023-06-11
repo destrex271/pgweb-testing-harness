@@ -6,11 +6,12 @@ git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
 # Get last commit id
-git rev-parse HEAD >"commit_id.txt"
-cat commit_id.txt
+ls
+git rev-parse HEAD >"../commit_id.txt"
+cat ../commit_id.txt
 cd ..
 rm -rf pgweb
-
+git status
 # Push to repository
 git add .
 git config --global user.name "destrex271"
