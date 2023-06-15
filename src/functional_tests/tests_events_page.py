@@ -7,6 +7,8 @@ from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 
+from .extra_utils.util_functions import varnish_cache
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import (
@@ -190,6 +192,7 @@ class EventsForm(LiveServerTestCase):
 
         # Add fixtures
         # print(Permission.objects.all())
+        varnish_cache()
         call_command('loaddata', 'pgweb/fixtures/users.json')
         call_command('loaddata', 'pgweb/fixtures/org_types.json')
         call_command('loaddata', 'pgweb/fixtures/organisations.json')
