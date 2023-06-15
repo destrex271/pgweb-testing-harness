@@ -1,0 +1,53 @@
+[
+  {
+    "model": "core.organisation",
+    "pk": 1,
+    "fields": {
+      "approved": true,
+      "name": "Hello",
+      "address": "Addre 12 dfd fsd, dfsjdfn , sdf dsf , 248001",
+      "url": "https://medium.com/",
+      "orgtype": 4,
+      "mailtemplate": "pgproject",
+      "fromnameoverride": "",
+      "lastconfirmed": "2023-06-13T10:30:52.166",
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "core.organisation",
+    "pk": 2,
+    "fields": {
+      "approved": true,
+      "name": "Test12",
+      "address": "Addr 1, sdjas d, asdii , asdaj , 248001",
+      "url": "https://github.com/",
+      "orgtype": 3,
+      "mailtemplate": "default",
+      "fromnameoverride": "",
+      "lastconfirmed": "2023-06-13T10:32:12.047",
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "core.organisation",
+    "pk": 3,
+    "fields": {
+      "approved": true,
+      "name": "Shiksha Sopan",
+      "address": "Shiksha Sopan, IIT Kanpur, Kanpur, UP",
+      "url": "https://www.shiksha-sopan.org/",
+      "orgtype": 1,
+      "mailtemplate": "default",
+      "fromnameoverride": "",
+      "lastconfirmed": "2023-06-13T10:33:32.959",
+      "managers": [
+        1
+      ]
+    }
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "model": "core.organisationtype",
+    "pk": 1,
+    "fields": {
+      "typename": "Education"
+    }
+  },
+  {
+    "model": "core.organisationtype",
+    "pk": 2,
+    "fields": {
+      "typename": "Database"
+    }
+  },
+  {
+    "model": "core.organisationtype",
+    "pk": 3,
+    "fields": {
+      "typename": "Computer"
+    }
+  },
+  {
+    "model": "core.organisationtype",
+    "pk": 4,
+    "fields": {
+      "typename": "Sales"
+    }
+  }
+]

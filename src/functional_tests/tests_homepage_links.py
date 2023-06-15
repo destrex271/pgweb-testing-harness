@@ -6,6 +6,7 @@ from selenium import webdriver
 import requests
 from selenium.webdriver.firefox.service import Service
 from django.db import connection
+from .extra_utils.util_functions import varnish_cache
 
 # Custom utilities
 from pgweb.utils.report_generation import write_to_report
@@ -92,38 +93,11 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         options = webdriver.FirefoxOptions()
         options.headless = True
         serv = Service(executable_path=GeckoDriverManager().install())
-
-        # Mannually running varnish cache sim code
-        cursor = connections["default"].cursor()
-        cursor.execute('''
-            BEGIN;
-
-            --
-            -- "cheating" version of the varnish_purge() function
-            -- that can be used on a local installation that doesn't
-            -- have any frontends.
-            --
-
-            CREATE OR REPLACE FUNCTION varnish_purge(url text)
-            RETURNS void
-            AS $$
-            $$ LANGUAGE 'sql';
-
-            CREATE OR REPLACE FUNCTION varnish_purge_expr(expr text)
-            RETURNS void
-            AS $$
-            $$ LANGUAGE 'sql';
-
-            CREATE OR REPLACE FUNCTION varnish_purge_xkey(key text)
-            RETURNS void
-            AS $$
-            $$ LANGUAGE 'sql';
-
-            COMMIT;''')
-        cursor.close()
-
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
+
+        # Calling SQL execution for varnish cache
+        varnish_cache()
         call_command('loaddata', 'pgweb/core/fixtures/data.json')
         call_command('loaddata', 'pgweb/docs/fixtures/data.json')
         call_command('loaddata', 'pgweb/lists/fixtures/data.json')
@@ -131,7 +105,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         call_command('loaddata', 'pgweb/downloads/fixtures/data.json')
         call_command('loaddata', 'pgweb/contributors/fixtures/data.json')
         call_command('loaddata', 'pgweb/featurematrix/fixtures/data.json')
-        print("Fixtures Loaded")
+
+        # Segregation of internal and external links
         segregate_links(cls.selenium, cls.live_server_url)
 
     @classmethod

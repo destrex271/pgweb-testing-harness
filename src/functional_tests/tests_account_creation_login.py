@@ -226,8 +226,9 @@ class UserLoginTests(LiveServerTestCase):
         cls.passwd = "root"
         cls.login_path = "/account/login/"
         cls.prefix = "id_"
+
+        # Loading fixtures
         call_command('loaddata', 'pgweb/fixtures/users.json')
-        print("Loaded fixtures")
 
     @classmethod
     def tearDownClass(cls) -> None:

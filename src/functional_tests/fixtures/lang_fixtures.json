@@ -1,0 +1,11 @@
+[
+  {
+    "model": "core.language",
+    "pk": 1,
+    "fields": {
+      "name": "English",
+      "frenchname": "Angish",
+      "alpha3": "123456"
+    }
+  }
+]
