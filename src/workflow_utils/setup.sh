@@ -33,8 +33,8 @@ sudo chmod +x pgweb/load_initial_data.sh
 yes | pgweb/load_initial_data.sh
 
 for entry in ../../functional_tests/*; do
-	echo "$entry"
-	cp -r "$entry" pgweb/
+    echo "$entry"
+    cp -r "$entry" pgweb/
 done
 
 cp -r ../../utils pgweb/
@@ -49,6 +49,7 @@ export DJANGO_SETTINGS_MODULE=pgweb.settings
 ./manage.py makemigrations
 ./manage.py migrate
 
+# coverage run --source='.' manage.py test --pattern="tests_ev*.py" --keepdb
 coverage run --source='.' manage.py test --pattern="tests_*.py" --keepdb
 
 cat *.txt

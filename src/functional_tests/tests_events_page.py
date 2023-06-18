@@ -1,5 +1,5 @@
 import random
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group, Permission, User
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.test.testcases import call_command, connections
 from selenium.webdriver.common.by import By
@@ -54,7 +54,7 @@ _Zen Writing - leaving you alone with your thoughts and your words_
 
 ## Markdown Online Editors
 
-**Mark** 
+**Mark**
 (web: [`mark.barelyhuman.dev`](https://mark.barelyhuman.dev),
 github: [`barelyhuman/mark`](https://github.com/barelyhuman/mark)) - Simple Web Markdown Editor
 
@@ -82,9 +82,9 @@ another simple single HTML page, server-less Markdown editor in JavaScript
 
 **HackMD**
 (web: [`hackmd.io`](http://hackmd.io/),
- github: [`HackMD`](https://github.com/hackmdio)) - Allows collaboration and more UI options. Link to Github is maintained. 
+ github: [`HackMD`](https://github.com/hackmdio)) - Allows collaboration and more UI options. Link to Github is maintained.
 
- **LetsMarkdown.com** 
+ **LetsMarkdown.com**
 (web: [`LetsMarkdown.com`](https://letsmarkdown.com/),
 github: [`Cveinnt/LetsMarkdown.com`](https://github.com/Cveinnt/LetsMarkdown.com)) - 👨‍💻👩‍💻 Fast, minimal web editor that makes markdown editing collaborative and accessible to everyone.
 
@@ -120,26 +120,37 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 
+def create_unauth_user():
+
+    usr = User.objects.filter(username="testuser1234").first()
+    if usr is None:
+        print("Current Users: ", User.objects.all())
+        print("User Not Found!; Creating new user....")
+        usr = User.objects.create_user(username="testr1234", email="testr1234@gmail.com",
+                                       password="testuser1234trypasswd")
+    return usr
+
+
 def create_permitted_user():
     user = get_user_model()
     content_type = ContentType.objects.get_for_model(Event)
     post_permission = Permission.objects.filter(content_type=content_type)
 
-    try:
-        usr = user.objects.get(username="testuser12")
-    except:
-        usr = user.objects.create_user(username="testuser12",
+    print("From create stuff", User.objects.all())
+
+    usr = user.objects.filter(email="testusr1@gmail.com").first()
+    if usr is None:
+        print("User does not exist, creating!")
+        usr = user.objects.create_user(username="testuser12", email="testusr1@gmail.com",
                                        password="testuser12@trypasswd")
 
-    for perm in post_permission:
-        usr.user_permissions.add(perm)
-
-    # print(usr.user_permissions)
+        # adding necessary permissions to user
+        for perm in post_permission:
+            usr.user_permissions.add(perm)
 
     # Create Organisation for User with user as the manager
-    try:
-        org = Organisation.objects.get(name="Dummy Org")
-    except:
+    org = Organisation.objects.filter(name="Dummy Org").first()
+    if org is None:
         org = Organisation(
             approved=True,
             name="Dummy Org",
@@ -150,8 +161,10 @@ def create_permitted_user():
             lastconfirmed="2023-06-13T10:33:32.959",
         )
         org.save()
+        org.managers.set([usr])
+    else:
+        org.managers.set([usr])
 
-    org.managers.set([usr])
     return usr
 
 
@@ -177,6 +190,9 @@ def generate_session_cookie(usr):
 
 class EventsForm(LiveServerTestCase):
 
+    fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
+                'pgweb/fixtures/organisations.json', 'pgweb/core/fixtures/data.json', 'pgweb/fixtures/lang_fixtures.json']
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -193,33 +209,16 @@ class EventsForm(LiveServerTestCase):
         # Add fixtures
         # print(Permission.objects.all())
         varnish_cache()
-        call_command('loaddata', 'pgweb/fixtures/users.json')
-        call_command('loaddata', 'pgweb/fixtures/org_types.json')
-        call_command('loaddata', 'pgweb/fixtures/organisations.json')
-        # Country Data
-        call_command('loaddata', 'pgweb/core/fixtures/data.json')
-        # Language Fixtures
-        call_command('loaddata', 'pgweb/fixtures/lang_fixtures.json')
-
-        # Get Preauthenticated Session Cookie
-        cls.session_cookie_perm_user = generate_session_cookie(
-            create_permitted_user())
+        # call_command('loaddata', 'pgweb/fixtures/users.json')
+        # call_command('loaddata', 'pgweb/fixtures/org_types.json')
+        # call_command('loaddata', 'pgweb/fixtures/organisations.json')
+        # # Country Data
+        # call_command('loaddata', 'pgweb/core/fixtures/data.json')
+        # # Language Fixtures
+        # call_command('loaddata', 'pgweb/fixtures/lang_fixtures.json')
 
         cls.start_date = "2023-10-10"
-
-        # # Add organisation for current user
-        # org = Organisation(
-        #     "approved": True,
-        #     "name": "Demo Org",
-        #     "address": "Demo Org, IIT Kanput, Kanpur, UP",
-        #     "url": "https://www.shiksha-sopan.org/",
-        #     "orgtype": 1,
-        #     "mailtemplate": "default",
-        #     "fromnameoverride": "",
-        #     "lastconfirmed": "2023-06-13T10:33:32.959",
-        #     "managers": 1
-        # )
-        # org.save()
+        cls.title = "Demo Event: PGCon 20xx"
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -229,7 +228,10 @@ class EventsForm(LiveServerTestCase):
     def test_add_offline_event(self):
         # Login user by setting session cookie
         self.selenium.get(self.live_server_url + "/")
-        self.selenium.add_cookie(self.session_cookie_perm_user)
+        print("Before Sending Users:", User.objects.all())
+        ck = generate_session_cookie(create_permitted_user())
+        print(ck)
+        self.selenium.add_cookie(ck)
 
         # Routing to main page to execute tests
         self.selenium.get(self.live_server_url + "/account/events/new/")
@@ -239,15 +241,13 @@ class EventsForm(LiveServerTestCase):
         # Iterate over Drop Down
         org_dropdown = self.selenium.find_element(By.ID, self.prefix+"org")
         options = org_dropdown.find_elements(By.TAG_NAME, "option")
-        # for op in options:
-        #     print(op.text)
         options[1].click()
         self.org = options[1].text
 
         title_feild = self.selenium.find_element(
             By.ID, self.prefix + "title")
         title_feild.send_keys(
-            "Demo Event: PGCon 20xx"
+            self.title
         )
 
         city = self.selenium.find_element(By.ID, self.prefix + "city")
@@ -291,6 +291,99 @@ class EventsForm(LiveServerTestCase):
         # Check if event was appended to unapproved events and shown
         li = self.selenium.find_element(
             By.XPATH, "/html/body/div[2]/div/div[2]/div/ul")
-        events = self.selenium.find_elements(By.TAG_NAME, "a")
+        events = li.find_elements(By.TAG_NAME, "a")
         self.assertEqual(events[0].text, str(
-            self.start_date) + ": " + str(self.org))
+            self.start_date) + ": " + str(self.title))
+
+        # Check Against Database
+        events = Event.objects.filter(
+            title=self.title, org_id=Organisation.objects.get(name=self.org).id)
+
+        self.assertNotEqual(len(events), 0)
+
+    def test_add_online_event(self):
+        # Login user by setting session cookie
+        self.selenium.get(self.live_server_url + "/")
+        print("Before Sending Users from online events:", User.objects.all())
+        ck = generate_session_cookie(create_permitted_user())
+        print(ck)
+        self.selenium.add_cookie(ck)
+
+        # Routing to main page to execute tests
+        self.selenium.get(self.live_server_url + "/account/events/new/")
+        hd = self.selenium.find_element(By.TAG_NAME, "h1")
+        self.assertEqual(hd.text, "New event")
+
+        # Iterate over Drop Down
+        org_dropdown = self.selenium.find_element(By.ID, self.prefix+"org")
+        options = org_dropdown.find_elements(By.TAG_NAME, "option")
+        # for op in options:
+        #     print(op.text)
+        options[1].click()
+        self.org = options[1].text
+
+        title_feild = self.selenium.find_element(
+            By.ID, self.prefix + "title")
+        title_feild.send_keys(
+            self.title
+        )
+
+        online = self.selenium.find_element(By.ID, self.prefix + "isonline")
+        online.click()
+
+        language = self.selenium.find_element(By.ID, self.prefix + "language")
+        lngs = language.find_elements(By.TAG_NAME, 'option')
+        lngs[1].click()
+
+        community_event = self.selenium.find_element(
+            By.ID, self.prefix + "badged")
+        community_event.click()
+
+        start_date = self.selenium.find_element(
+            By.ID, self.prefix + "startdate")
+        start_date.send_keys(self.start_date)
+
+        end_date = self.selenium.find_element(By.ID, self.prefix + "enddate")
+        end_date.send_keys('2023-10-12')
+
+        summary = self.selenium.find_element(By.ID, self.prefix + "summary")
+        summary.send_keys('''The PostgreSQL community recently conducted a highly successful event that brought together enthusiasts, developers, and experts from around the world. The event aimed to showcase the latest developments, share knowledge, and foster collaboration within the PostgreSQL ecosystem. The event featured a diverse range of sessions, including technical presentations, panel discussions, workshops, and networking opportunities. Renowned speakers delivered insightful talks on various topics related to PostgreSQL, covering areas such as performance optimization, high availability, data modeling, security, and emerging trends. Attendees had the opportunity to engage in interactive discussions and learn from the experiences of industry leaders and seasoned professionals. The event provided a platform for both beginners and experienced users to exchange ideas, ask questions, and explore innovative use cases.''')
+
+        details = self.selenium.find_element(By.ID, self.prefix + "details")
+        details.send_keys(markup_content)
+
+        btn = self.selenium.find_element(By.CLASS_NAME, 'btn-primary')
+        btn.click()
+
+        # Check Heading
+        msg_hd = self.selenium.find_element(By.TAG_NAME, 'h3')
+        self.assertEqual(msg_hd.text, "Waiting for moderator approval")
+
+        # Check if event was appended to unapproved events and shown
+        li = self.selenium.find_element(
+            By.XPATH, "/html/body/div[2]/div/div[2]/div/ul")
+
+        events = li.find_elements(By.TAG_NAME, "a")
+        self.assertEqual(events[0].text, str(
+            self.start_date) + ": " + str(self.title))
+
+        # Check Against Database
+        events = Event.objects.filter(
+            title=self.title, org_id=Organisation.objects.get(name=self.org).id)
+
+        self.assertNotEqual(len(events), 0)
+
+    def test_add_event_by_unauth_user(self):
+        # Login user by setting session cookie
+        self.selenium.get(self.live_server_url + "/")
+        self.selenium.add_cookie(generate_session_cookie(create_unauth_user()))
+
+        # Routing to main page to execute tests
+        self.selenium.get(self.live_server_url + "/account/events/new/")
+        hd = self.selenium.find_element(By.TAG_NAME, "h1")
+        self.assertEqual(hd.text, "New event")
+
+        # Iterate over Drop Down
+        org_dropdown = self.selenium.find_element(By.ID, self.prefix+"org")
+        options = org_dropdown.find_elements(By.TAG_NAME, "option")
+        self.assertEqual(len(options), 1)
