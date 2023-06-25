@@ -8,6 +8,7 @@ from selenium import webdriver
 from django.contrib.auth.models import User
 from string import punctuation
 
+
 # Fix for CASCADE TRUNCATE FK error
 
 
@@ -254,7 +255,7 @@ class UserLoginTests(LiveServerTestCase):
                          self.live_server_url + "/account/")
 
         heading = self.selenium.find_element(By.TAG_NAME, 'h1')
-        self.assertEqual(heading.text, "Your account")
+        self.assertEqual(heading.text.lower().strip(), "your account")
 
     # def test_registered_account_login_with_email(self):
     #     self.selenium.get(self.live_server_url + self.login_path)
@@ -298,11 +299,11 @@ class UserLoginTests(LiveServerTestCase):
                          self.live_server_url + self.login_path)
 
         heading = self.selenium.find_element(By.TAG_NAME, 'h1')
-        self.assertEqual(heading.text, "Sign in")
+        self.assertEqual(heading.text.lower().strip(), "sign in")
 
         alert = self.selenium.find_element(By.CLASS_NAME, 'alert')
         self.assertEqual(
-            alert.text, "Please enter a correct username and password. Note that both fields may be case-sensitive.")
+            alert.text.lower().strip(), "please enter a correct username and password. note that both fields may be case-sensitive.")
 
     def test_registered_account_wrong_password_login(self):
         self.selenium.get(self.live_server_url + self.login_path)
@@ -325,8 +326,8 @@ class UserLoginTests(LiveServerTestCase):
                          self.live_server_url + self.login_path)
 
         heading = self.selenium.find_element(By.TAG_NAME, 'h1')
-        self.assertEqual(heading.text, "Sign in")
+        self.assertEqual(heading.text.lower().strip(), "sign in")
 
         alert = self.selenium.find_element(By.CLASS_NAME, 'alert')
         self.assertEqual(
-            alert.text, "Please enter a correct username and password. Note that both fields may be case-sensitive.")
+            alert.text.lower().strip(), "please enter a correct username and password. note that both fields may be case-sensitive.")

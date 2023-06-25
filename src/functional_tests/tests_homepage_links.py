@@ -130,8 +130,6 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
     def test_internal_links(self):
         for lnk in internal_links:
-            if lnk.__contains__("doc"):
-                print("\t\t\t\t" + lnk)
             res = requests.get(lnk)
             if not res is None:
                 stat = res.status_code

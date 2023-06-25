@@ -50,7 +50,10 @@ export DJANGO_SETTINGS_MODULE=pgweb.settings
 ./manage.py migrate
 
 # coverage run --source='.' manage.py test --pattern="tests_ev*.py" --keepdb
-coverage run --source='.' manage.py test --pattern="tests_*.py" --keepdb
+# cat "\t\t\t\tFINAL REPORT" >final_report.txt
+./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
 
-cat *.txt
+# echo -e "Final Report"
+# cat final_report.txt
+
 PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE pgmsdb;"

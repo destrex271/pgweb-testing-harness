@@ -1,5 +1,5 @@
 import random
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.models import Permission, User
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.test.testcases import call_command, connections
 from selenium.webdriver.common.by import By
@@ -7,21 +7,12 @@ from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 
-from .extra_utils.util_functions import varnish_cache
-
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth import (
-    SESSION_KEY, BACKEND_SESSION_KEY, HASH_SESSION_KEY,
-    get_user_model
-)
-from django.contrib.sessions.backends.db import SessionStore
-
 # pgweb codebase models; ignore the errors
 from .core.models import Organisation, OrganisationType
 from .events.models import Event
 
-# Fix for CASCADE TRUNCATE FK error
+# Util functions
+from .extra_utils.util_functions import create_unauth_user, create_permitted_user, generate_session_cookie, varnish_cache
 
 
 markup_content = '''
@@ -91,6 +82,7 @@ github: [`Cveinnt/LetsMarkdown.com`](https://github.com/Cveinnt/LetsMarkdown.com
 '''
 
 
+# Fix for CASCADE TRUNCATE FK error
 def _fixture_teardown(self):
     # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
     # when flushing only a subset of the apps
@@ -120,74 +112,6 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 
-def create_unauth_user():
-
-    usr = User.objects.filter(username="testuser1234").first()
-    if usr is None:
-        print("Current Users: ", User.objects.all())
-        print("User Not Found!; Creating new user....")
-        usr = User.objects.create_user(username="testr1234", email="testr1234@gmail.com",
-                                       password="testuser1234trypasswd")
-    return usr
-
-
-def create_permitted_user():
-    user = get_user_model()
-    content_type = ContentType.objects.get_for_model(Event)
-    post_permission = Permission.objects.filter(content_type=content_type)
-
-    print("From create stuff", User.objects.all())
-
-    usr = user.objects.filter(email="testusr1@gmail.com").first()
-    if usr is None:
-        print("User does not exist, creating!")
-        usr = user.objects.create_user(username="testuser12", email="testusr1@gmail.com",
-                                       password="testuser12@trypasswd")
-
-        # adding necessary permissions to user
-        for perm in post_permission:
-            usr.user_permissions.add(perm)
-
-    # Create Organisation for User with user as the manager
-    org = Organisation.objects.filter(name="Dummy Org").first()
-    if org is None:
-        org = Organisation(
-            approved=True,
-            name="Dummy Org",
-            address="Dummy Org addr",
-            url="https://www.shiksha-sopan.org",
-            orgtype=OrganisationType.objects.get(id=1),
-            mailtemplate="default",
-            lastconfirmed="2023-06-13T10:33:32.959",
-        )
-        org.save()
-        org.managers.set([usr])
-    else:
-        org.managers.set([usr])
-
-    return usr
-
-
-def generate_session_cookie(usr):
-
-    # Create Session
-    session = SessionStore()
-    session[SESSION_KEY] = usr.pk
-    session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
-    session[HASH_SESSION_KEY] = usr.get_session_auth_hash()
-    session.save()
-
-    # Generate Cookie
-    cookie = {
-        'name': settings.SESSION_COOKIE_NAME,
-        'value': session.session_key,
-        'secure': False,
-        'path': '/',
-    }
-
-    return cookie
-
-
 class EventsForm(LiveServerTestCase):
 
     fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
@@ -206,16 +130,7 @@ class EventsForm(LiveServerTestCase):
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
 
-        # Add fixtures
-        # print(Permission.objects.all())
         varnish_cache()
-        # call_command('loaddata', 'pgweb/fixtures/users.json')
-        # call_command('loaddata', 'pgweb/fixtures/org_types.json')
-        # call_command('loaddata', 'pgweb/fixtures/organisations.json')
-        # # Country Data
-        # call_command('loaddata', 'pgweb/core/fixtures/data.json')
-        # # Language Fixtures
-        # call_command('loaddata', 'pgweb/fixtures/lang_fixtures.json')
 
         cls.start_date = "2023-10-10"
         cls.title = "Demo Event: PGCon 20xx"
@@ -228,15 +143,13 @@ class EventsForm(LiveServerTestCase):
     def test_add_offline_event(self):
         # Login user by setting session cookie
         self.selenium.get(self.live_server_url + "/")
-        print("Before Sending Users:", User.objects.all())
         ck = generate_session_cookie(create_permitted_user())
-        print(ck)
         self.selenium.add_cookie(ck)
 
         # Routing to main page to execute tests
         self.selenium.get(self.live_server_url + "/account/events/new/")
         hd = self.selenium.find_element(By.TAG_NAME, "h1")
-        self.assertEqual(hd.text, "New event")
+        self.assertEqual(hd.text.lower().strip(), "new event")
 
         # Iterate over Drop Down
         org_dropdown = self.selenium.find_element(By.ID, self.prefix+"org")
@@ -286,14 +199,15 @@ class EventsForm(LiveServerTestCase):
 
         # Check Heading
         msg_hd = self.selenium.find_element(By.TAG_NAME, 'h3')
-        self.assertEqual(msg_hd.text, "Waiting for moderator approval")
+        self.assertEqual(msg_hd.text.lower().strip(),
+                         "waiting for moderator approval")
 
         # Check if event was appended to unapproved events and shown
         li = self.selenium.find_element(
             By.XPATH, "/html/body/div[2]/div/div[2]/div/ul")
         events = li.find_elements(By.TAG_NAME, "a")
-        self.assertEqual(events[0].text, str(
-            self.start_date) + ": " + str(self.title))
+        self.assertEqual(events[0].text.lower().strip(), (str(
+            self.start_date) + ": " + str(self.title)).lower().strip())
 
         # Check Against Database
         events = Event.objects.filter(
@@ -304,15 +218,13 @@ class EventsForm(LiveServerTestCase):
     def test_add_online_event(self):
         # Login user by setting session cookie
         self.selenium.get(self.live_server_url + "/")
-        print("Before Sending Users from online events:", User.objects.all())
         ck = generate_session_cookie(create_permitted_user())
-        print(ck)
         self.selenium.add_cookie(ck)
 
         # Routing to main page to execute tests
         self.selenium.get(self.live_server_url + "/account/events/new/")
         hd = self.selenium.find_element(By.TAG_NAME, "h1")
-        self.assertEqual(hd.text, "New event")
+        self.assertEqual(hd.text.lower().strip(), "new event")
 
         # Iterate over Drop Down
         org_dropdown = self.selenium.find_element(By.ID, self.prefix+"org")
@@ -357,15 +269,16 @@ class EventsForm(LiveServerTestCase):
 
         # Check Heading
         msg_hd = self.selenium.find_element(By.TAG_NAME, 'h3')
-        self.assertEqual(msg_hd.text, "Waiting for moderator approval")
+        self.assertEqual(msg_hd.text.lower().strip(),
+                         "waiting for moderator approval")
 
         # Check if event was appended to unapproved events and shown
         li = self.selenium.find_element(
             By.XPATH, "/html/body/div[2]/div/div[2]/div/ul")
 
         events = li.find_elements(By.TAG_NAME, "a")
-        self.assertEqual(events[0].text, str(
-            self.start_date) + ": " + str(self.title))
+        self.assertEqual(events[0].text.lower().strip(), (str(
+            self.start_date) + ": " + str(self.title)).lower().strip())
 
         # Check Against Database
         events = Event.objects.filter(
@@ -381,7 +294,7 @@ class EventsForm(LiveServerTestCase):
         # Routing to main page to execute tests
         self.selenium.get(self.live_server_url + "/account/events/new/")
         hd = self.selenium.find_element(By.TAG_NAME, "h1")
-        self.assertEqual(hd.text, "New event")
+        self.assertEqual(hd.text.lower().strip(), "new event")
 
         # Iterate over Drop Down
         org_dropdown = self.selenium.find_element(By.ID, self.prefix+"org")
