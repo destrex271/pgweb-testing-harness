@@ -49,5 +49,16 @@
         1
       ]
     }
+  },
+  {
+    "model": "core.organisationemail",
+    "pk": 1,
+    "fields": {
+      "org": 1,
+      "address": "test@gmail.com",
+      "confirmed": true,
+      "token": "35b4e8a1189bb113f85b11b72b0bb90f77ac75d71d73c2c85db8751313cc26a6",
+      "added": "2023-06-25T17:21:04.665"
+    }
   }
 ]

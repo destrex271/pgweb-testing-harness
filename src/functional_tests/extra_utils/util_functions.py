@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import connections
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -8,9 +9,13 @@ from django.contrib.auth import (
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.auth.models import Permission, User
 
+# Additional Libraries
+import hashlib
+
 # pgweb codebase models; ignore the errors
-from pgweb.core.models import Organisation, OrganisationType
+from pgweb.core.models import Organisation, OrganisationType, OrganisationEmail
 from pgweb.events.models import Event
+from pgweb.news.models import NewsTag
 
 
 def varnish_cache():
@@ -50,6 +55,60 @@ def create_unauth_user():
     if usr is None:
         usr = User.objects.create_user(username="testr1234", email="testr1234@gmail.com",
                                        password="testuser1234trypasswd")
+    return usr
+
+
+def create_permitted_user_with_org_email():
+    user = get_user_model()
+    content_type = ContentType.objects.get_for_model(Event)
+    post_permission = Permission.objects.filter(content_type=content_type)
+
+    usr = user.objects.filter(email="testusr1@gmail.com").first()
+    if usr is None:
+        usr = user.objects.create_user(username="testuser12", email="testusr1@gmail.com",
+                                       password="testuser12@trypasswd")
+
+        # adding necessary permissions to user
+        for perm in post_permission:
+            usr.user_permissions.add(perm)
+
+    # Create Organisation for User with user as the manager
+    org = Organisation.objects.filter(name="Dummy Org").first()
+    if org is None:
+        org = Organisation(
+            approved=True,
+            name="Dummy Org",
+            address="Dummy Org addr",
+            url="https://www.shiksha-sopan.org",
+            orgtype=OrganisationType.objects.get(id=1),
+            mailtemplate="default",
+            lastconfirmed="2023-06-13T10:33:32.959",
+        )
+        org.save()
+        org.managers.set([usr])
+    else:
+        org.managers.set([usr])
+
+    # Add organisation email
+    org_email = OrganisationEmail.objects.filter(org=org).first()
+    if org_email is None:
+        org_email = OrganisationEmail(
+            org=org,
+            address="test_org@gmail.com",
+            confirmed=True,
+            token=str(hashlib.sha256(b"test_org@gmail.com"))[:100],
+            added=datetime.now()
+        )
+        org_email.save()
+
+    # Add tag for org
+    news_tag = NewsTag(
+        urlname="urlname",
+        name="tag1",
+        description="Tag description",
+    )
+    news_tag.save()
+    news_tag.allowed_orgs.set([org])
     return usr
 
 

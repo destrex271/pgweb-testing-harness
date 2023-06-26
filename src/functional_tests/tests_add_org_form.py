@@ -9,7 +9,7 @@ from django.contrib.staticfiles.testing import LiveServerTestCase
 
 # Util functions
 
-from .extra_utils.util_functions import create_unauth_user, create_permitted_user, generate_session_cookie, varnish_cache
+from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, varnish_cache
 
 # Models from pgweb codebase
 from .core.models import Organisation
