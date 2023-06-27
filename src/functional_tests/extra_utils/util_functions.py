@@ -102,13 +102,14 @@ def create_permitted_user_with_org_email():
         org_email.save()
 
     # Add tag for org
-    news_tag = NewsTag(
+    news_tag = NewsTag.objects.create(
         urlname="urlname",
         name="tag1",
         description="Tag description",
     )
-    news_tag.save()
     news_tag.allowed_orgs.set([org])
+    news_tag.save()
+    # print(org, " Organisations:", news_tag.allowed_orgs[0])
     return usr
 
 

@@ -55,7 +55,7 @@ markup_content = '''
 class NewsFormTests(LiveServerTestCase):
 
     fixtures = ['pgweb/fixtures/users.json',
-                'pgweb/fixtures/org_types.json', 'pgweb/fixtures/organisations.json']
+                'pgweb/fixtures/org_types.json', 'pgweb/fixtures/organisations.json', 'pgweb/fixtures/news_article.json']
 
     @classmethod
     def setUpClass(cls):
@@ -100,14 +100,15 @@ class NewsFormTests(LiveServerTestCase):
         self.selenium.find_element(
             By.ID, self.prefix + "content").send_keys(markup_content)
         # select news tags
-        self.selenium.find_element(By.ID, self.prefix + "tags_0").click()
+        self.selenium.find_element(By.ID, self.prefix + "tags_1").click()
 
         # click save draft
         st = self.selenium.find_element(
             By.XPATH, "/html/body/div[2]/div/div[2]/div/form/button")
-        print("tag ", st.text)
         st.click()
-
+        alerts = self.selenium.find_elements(By.CLASS_NAME, "alert")
+        for alert in alerts:
+            print(alert.text)
         self.assertNotEqual(self.selenium.current_url,
                             self.live_server_url + "/account/news/new/")
         print(self.selenium.current_url)
@@ -134,3 +135,6 @@ class NewsFormTests(LiveServerTestCase):
         articles = NewsArticle.objects.all()
         print(articles)
         self.assertNotEqual(len(articles), 0)
+
+    def test_article_withdrawl(self):
+        self.seleniume

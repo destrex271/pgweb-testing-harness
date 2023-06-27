@@ -1,0 +1,90 @@
+[
+  {
+    "model": "core.organisationtype",
+    "pk": 1,
+    "fields": {
+      "typename": "edu"
+    }
+  },
+  {
+    "model": "core.organisation",
+    "pk": 1,
+    "fields": {
+      "approved": true,
+      "name": "asd",
+      "address": "asd",
+      "url": "https://kyllex.live",
+      "orgtype": 1,
+      "mailtemplate": "default",
+      "fromnameoverride": "",
+      "lastconfirmed": "2023-06-24T06:53:09.272",
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "core.organisation",
+    "pk": 2,
+    "fields": {
+      "approved": false,
+      "name": "Organisation XYZ",
+      "address": "Org Address, STR Road, Dehradun, India",
+      "url": "https://kyllex.live",
+      "orgtype": 1,
+      "mailtemplate": "default",
+      "fromnameoverride": "",
+      "lastconfirmed": "2023-06-24T08:47:35.341",
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "core.organisation",
+    "pk": 3,
+    "fields": {
+      "approved": false,
+      "name": "adsd",
+      "address": "asdasd",
+      "url": "https://kyllex.live",
+      "orgtype": 1,
+      "mailtemplate": "default",
+      "fromnameoverride": "",
+      "lastconfirmed": "2023-06-25T17:17:07.854",
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "news.newstag",
+    "pk": 1,
+    "fields": {
+      "urlname": "newtag",
+      "name": "eduk",
+      "description": "sasasas",
+      "sortkey": 100,
+      "allowed_orgs": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "news.newsarticle",
+    "pk": 1,
+    "fields": {
+      "modstate": 1,
+      "firstmoderator": null,
+      "org": 1,
+      "email": 1,
+      "date": "2023-06-26",
+      "title": "df",
+      "content": "df",
+      "tweeted": false,
+      "tags": [
+        1
+      ]
+    }
+  }
+]
