@@ -81,7 +81,7 @@ class ProductFormTests(LiveServerTestCase):
         cls.selenium.quit()
         return super().tearDownClass()
 
-    def test_product_submit(self):
+    def test_product_submit_and_approval(self):
         self.selenium.get(self.live_server_url + "/")
         usr = create_permitted_user_with_org_email()
         ck = generate_session_cookie(usr)
@@ -156,3 +156,78 @@ class ProductFormTests(LiveServerTestCase):
                 print(lk.text)
                 if lk.text.__contains__(self.name):
                     self.assertEqual(lk.text.lower(), self.name.lower())
+
+    def test_unapproved_product_submit(self):
+        self.selenium.get(self.live_server_url + "/")
+        usr = create_permitted_user_with_org_email()
+        ck = generate_session_cookie(usr)
+        self.selenium.add_cookie(ck)
+
+        self.selenium.get(self.live_server_url + "/account/products/new/")
+        print(self.selenium.current_url)
+
+        # Add data to fields
+        self.selenium.find_element(
+            By.ID, self.prefix + "name").send_keys(self.name)
+        self.selenium.find_element(
+            By.ID, self.prefix + "url").send_keys('https://kyllex.live')
+        org_drop_down_elems = self.selenium.find_element(By.ID,
+                                                         self.prefix + "org").find_elements(By.TAG_NAME, 'option')
+        ind = random.randint(
+            1, len(org_drop_down_elems) - 1)
+        org_drop_down_elems[ind].click()
+
+        catg_drop_down_elems = self.selenium.find_element(By.ID,
+                                                          self.prefix + "category").find_elements(By.TAG_NAME, 'option')
+        ind = random.randint(
+            1, len(catg_drop_down_elems) - 1)
+        self.ctg = catg_drop_down_elems[ind].text
+        catg_drop_down_elems[ind].click()
+
+        lict_drop_down_elems = self.selenium.find_element(By.ID,
+                                                          self.prefix + "licencetype").find_elements(By.TAG_NAME, 'option')
+        ind = random.randint(
+            1, len(lict_drop_down_elems) - 1)
+        lict_drop_down_elems[ind].click()
+
+        self.selenium.find_element(
+            By.ID, self.prefix + "description").send_keys(markup_content)
+
+        # Save product
+        self.selenium.find_element(
+            By.XPATH, "/html/body/div[2]/div/div[2]/div/form/button").click()
+
+        alerts = self.selenium.find_elements(By.CLASS_NAME, 'alert')
+        print("ALERTS: ")
+        for alert in alerts:
+            print(alert.text)
+
+        # Check for redirection
+        heading = self.selenium.find_element(By.TAG_NAME, 'h1').text
+        self.assertEqual(heading.lower(), "products")
+        self.assertEqual(self.selenium.current_url,
+                         self.live_server_url + "/account/edit/products/")
+
+        # Check Database
+        prds = Product.objects.filter(name=self.name)
+        self.assertEqual(len(prds), 1)
+
+        # Check Downloads page
+        self.selenium.get(self.live_server_url +
+                          "/download/product-categories/")
+
+        link = self.selenium.find_element(By.LINK_TEXT, self.ctg)
+        link.click()
+
+        print(self.selenium.current_url)
+        table_elems = self.selenium.find_elements(
+            By.TAG_NAME, 'table')
+        flag = True
+        for tb in table_elems:
+            lks = tb.find_elements(By.TAG_NAME, 'a')
+            for lk in lks:
+                print(lk.text)
+                if lk.text.__contains__(self.name):
+                    flag = False
+
+        self.assertTrue(flag)
