@@ -52,7 +52,7 @@ export DJANGO_SETTINGS_MODULE=pgweb.settings
 # coverage run --source='.' manage.py test --pattern="tests_ev*.py" --keepdb
 # cat "\t\t\t\tFINAL REPORT" >final_report.txt
 # ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
-./manage.py test --pattern="tests_news_*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
+./manage.py test --pattern="tests_products_*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
 
 # echo -e "Final Report"
 # cat final_report.txt
