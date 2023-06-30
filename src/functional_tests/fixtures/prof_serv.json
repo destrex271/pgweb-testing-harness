@@ -1,0 +1,54 @@
+[
+  {
+    "model": "profserv.professionalservice",
+    "pk": 1,
+    "fields": {
+      "approved": false,
+      "org": 3,
+      "description": "dfdfdf",
+      "employees": "12",
+      "locations": null,
+      "region_africa": false,
+      "region_asia": true,
+      "region_europe": true,
+      "region_northamerica": false,
+      "region_oceania": false,
+      "region_southamerica": false,
+      "hours": "12",
+      "languages": "lang1",
+      "customerexample": "fsdfdf",
+      "experience": "adsd",
+      "contact": "",
+      "url": "https://kyllex.live",
+      "provides_support": true,
+      "provides_hosting": true,
+      "interfaces": "none"
+    }
+  },
+  {
+    "model": "profserv.professionalservice",
+    "pk": 1,
+    "fields": {
+      "approved": true,
+      "org": 2,
+      "description": "Product",
+      "employees": "12",
+      "locations": null,
+      "region_africa": false,
+      "region_asia": true,
+      "region_europe": true,
+      "region_northamerica": false,
+      "region_oceania": false,
+      "region_southamerica": false,
+      "hours": "12",
+      "languages": "lang1",
+      "customerexample": "fsdfdf",
+      "experience": "adsd",
+      "contact": "",
+      "url": "https://kyllex.live",
+      "provides_support": true,
+      "provides_hosting": true,
+      "interfaces": "none"
+    }
+  }
+]
