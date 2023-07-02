@@ -132,7 +132,7 @@ class OrgFormTests(LiveServerTestCase):
         x = Organisation.objects.filter(name=self.org_name)
         self.assertNotEqual(len(x), 0)
 
-    def test_alerts_on_wrong_data(self):
+    def test_org_form_alerts_on_wrong_data(self):
 
         # Login User
         self.selenium.get(self.live_server_url + "/")

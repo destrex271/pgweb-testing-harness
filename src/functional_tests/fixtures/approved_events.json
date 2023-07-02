@@ -1,0 +1,42 @@
+[
+  {
+    "model": "events.event",
+    "pk": 10,
+    "fields": {
+      "approved": true,
+      "org": 1,
+      "title": "testnews",
+      "isonline": true,
+      "city": "",
+      "state": "",
+      "country": null,
+      "language": "123456",
+      "badged": true,
+      "description_for_badged": "",
+      "startdate": "2023-01-10",
+      "enddate": "2023-10-11",
+      "summary": "HI summary",
+      "details": "Summary"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 11,
+    "fields": {
+      "approved": false,
+      "org": 1,
+      "title": "testnews2",
+      "isonline": true,
+      "city": "",
+      "state": "",
+      "country": null,
+      "language": "123456",
+      "badged": true,
+      "description_for_badged": "",
+      "startdate": "2023-11-10",
+      "enddate": "2023-12-11",
+      "summary": "HI summary",
+      "details": "Summary"
+    }
+  }
+]

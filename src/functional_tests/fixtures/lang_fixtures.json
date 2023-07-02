@@ -7,5 +7,15 @@
       "frenchname": "Angish",
       "alpha3": "123456"
     }
+  },
+  {
+    "model": "core.language",
+    "pk": "123456",
+    "fields": {
+      "alpha3term": "",
+      "alpha2": "",
+      "name": "English",
+      "frenchname": "Angish"
+    }
   }
 ]

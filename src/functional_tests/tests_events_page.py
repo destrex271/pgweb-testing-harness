@@ -115,7 +115,7 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 class EventsForm(LiveServerTestCase):
 
     fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
-                'pgweb/fixtures/organisations.json', 'pgweb/core/fixtures/data.json', 'pgweb/fixtures/lang_fixtures.json']
+                'pgweb/fixtures/organisations.json', 'pgweb/core/fixtures/data.json', 'pgweb/fixtures/lang_fixtures.json', 'pgweb/fixtures/approved_events.json']
 
     @classmethod
     def setUpClass(cls):
@@ -175,6 +175,7 @@ class EventsForm(LiveServerTestCase):
 
         language = self.selenium.find_element(By.ID, self.prefix + "language")
         lngs = language.find_elements(By.TAG_NAME, 'option')
+        print(lngs[1].text)
         lngs[1].click()
 
         community_event = self.selenium.find_element(
@@ -285,6 +286,27 @@ class EventsForm(LiveServerTestCase):
             title=self.title, org_id=Organisation.objects.get(name=self.org).id)
 
         self.assertNotEqual(len(events), 0)
+
+    def test_render_approved_event(self):
+        print(Event.objects.all())
+        title = "testnews"
+        title2 = "testnews2"
+        # Check the events page to see if event has been rendered
+        self.selenium.get(self.live_server_url + "/about/events/")
+        content = self.selenium.find_element(By.ID, 'pgContentWrap')
+        links = content.find_elements(By.TAG_NAME, 'a')
+        for link in links:
+            # Check if unapproved event is being displayed
+            self.assertFalse(link.text.__contains__(title2))
+            if link.text.__contains__(title):
+                link.click()
+                break
+        self.assertNotEqual(
+            self.selenium.current_url, self.live_server_url + "/about/events/")
+
+        content = self.selenium.find_element(By.ID, 'pgContentWrap')
+        self.assertEqual(content.find_element(
+            By.TAG_NAME, 'h1').text.lower(), title.lower())
 
     def test_add_event_by_unauth_user(self):
         # Login user by setting session cookie

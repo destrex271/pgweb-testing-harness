@@ -87,7 +87,6 @@ class ProductFormTests(LiveServerTestCase):
         self.selenium.add_cookie(ck)
 
         self.selenium.get(self.live_server_url + "/account/products/new/")
-        print(self.selenium.current_url)
 
         # Add data to fields
         self.selenium.find_element(
@@ -121,9 +120,6 @@ class ProductFormTests(LiveServerTestCase):
             By.XPATH, "/html/body/div[2]/div/div[2]/div/form/button").click()
 
         alerts = self.selenium.find_elements(By.CLASS_NAME, 'alert')
-        print("ALERTS: ")
-        for alert in alerts:
-            print(alert.text)
 
         # Check for redirection
         heading = self.selenium.find_element(By.TAG_NAME, 'h1').text
@@ -136,7 +132,6 @@ class ProductFormTests(LiveServerTestCase):
         self.assertEqual(len(prds), 1)
         prds.first().approved = True
         prds.first().save()
-        print(prds.first())
 
         # Check Downloads page
         self.selenium.get(self.live_server_url +
@@ -145,14 +140,11 @@ class ProductFormTests(LiveServerTestCase):
         link = self.selenium.find_element(By.LINK_TEXT, self.ctg)
         link.click()
 
-        print(self.selenium.current_url)
         table_elems = self.selenium.find_elements(
             By.TAG_NAME, 'table')
-        print("Links")
         for tb in table_elems:
             lks = tb.find_elements(By.TAG_NAME, 'a')
             for lk in lks:
-                print(lk.text)
                 if lk.text.__contains__(self.name):
                     self.assertEqual(lk.text.lower(), self.name.lower())
 
@@ -163,7 +155,6 @@ class ProductFormTests(LiveServerTestCase):
         self.selenium.add_cookie(ck)
 
         self.selenium.get(self.live_server_url + "/account/products/new/")
-        print(self.selenium.current_url)
 
         # Add data to fields
         self.selenium.find_element(
@@ -197,9 +188,6 @@ class ProductFormTests(LiveServerTestCase):
             By.XPATH, "/html/body/div[2]/div/div[2]/div/form/button").click()
 
         alerts = self.selenium.find_elements(By.CLASS_NAME, 'alert')
-        print("ALERTS: ")
-        for alert in alerts:
-            print(alert.text)
 
         # Check for redirection
         heading = self.selenium.find_element(By.TAG_NAME, 'h1').text
@@ -218,14 +206,12 @@ class ProductFormTests(LiveServerTestCase):
         link = self.selenium.find_element(By.LINK_TEXT, self.ctg)
         link.click()
 
-        print(self.selenium.current_url)
         table_elems = self.selenium.find_elements(
             By.TAG_NAME, 'table')
         flag = True
         for tb in table_elems:
             lks = tb.find_elements(By.TAG_NAME, 'a')
             for lk in lks:
-                print(lk.text)
                 if lk.text.__contains__(self.name):
                     flag = False
 
