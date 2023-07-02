@@ -103,9 +103,6 @@ class OrgFormTests(LiveServerTestCase):
         types = self.selenium.find_element(
             By.ID, self.prefix + "orgtype").find_elements(By.TAG_NAME, 'option')
         k = random.randint(1, len(types) - 1)
-        for t in types:
-            print(t.text)
-        print("Selected ", types[k].text)
         types[k].click()
 
         # Submit Data
@@ -113,8 +110,6 @@ class OrgFormTests(LiveServerTestCase):
             By.XPATH, '/html/body/div[2]/div/div[2]/div/form/button').click()
 
         # Check if the page was redirected to organisations
-        print(self.selenium.current_url)
-
         heading = self.selenium.find_element(By.TAG_NAME, 'h1').text
         self.assertEqual(heading.lower().strip(), 'organisations')
 

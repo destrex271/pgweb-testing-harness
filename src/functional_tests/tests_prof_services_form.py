@@ -192,7 +192,6 @@ class ProductFormTests(LiveServerTestCase):
 
         req_columns = ["website", "description", "provides", "employees",
                        "hours", "languages", "customer example", "experience", "office locations", "contact information"]
-        print("Length: ", len(tables))
 
         for table in tables:
             table_rows = table.find_elements(By.TAG_NAME, 'tr')
@@ -200,4 +199,3 @@ class ProductFormTests(LiveServerTestCase):
                 self.assertIn(tr.find_element(
                     By.TAG_NAME, 'th').text.lower(), req_columns)
                 # Check data
-                print(tr.find_element(By.TAG_NAME, 'td').text)

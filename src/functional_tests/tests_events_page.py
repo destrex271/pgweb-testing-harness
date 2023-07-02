@@ -175,7 +175,6 @@ class EventsForm(LiveServerTestCase):
 
         language = self.selenium.find_element(By.ID, self.prefix + "language")
         lngs = language.find_elements(By.TAG_NAME, 'option')
-        print(lngs[1].text)
         lngs[1].click()
 
         community_event = self.selenium.find_element(
@@ -231,7 +230,6 @@ class EventsForm(LiveServerTestCase):
         org_dropdown = self.selenium.find_element(By.ID, self.prefix+"org")
         options = org_dropdown.find_elements(By.TAG_NAME, "option")
         # for op in options:
-        #     print(op.text)
         options[1].click()
         self.org = options[1].text
 
@@ -288,7 +286,6 @@ class EventsForm(LiveServerTestCase):
         self.assertNotEqual(len(events), 0)
 
     def test_render_approved_event(self):
-        print(Event.objects.all())
         title = "testnews"
         title2 = "testnews2"
         # Check the events page to see if event has been rendered

@@ -214,6 +214,8 @@ class CreateUserAccount(LiveServerTestCase):
 
 class UserLoginTests(LiveServerTestCase):
 
+    fixtures = ['pgweb/fixtures/users.json']
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -227,9 +229,6 @@ class UserLoginTests(LiveServerTestCase):
         cls.passwd = "root"
         cls.login_path = "/account/login/"
         cls.prefix = "id_"
-
-        # Loading fixtures
-        call_command('loaddata', 'pgweb/fixtures/users.json')
 
     @classmethod
     def tearDownClass(cls) -> None:

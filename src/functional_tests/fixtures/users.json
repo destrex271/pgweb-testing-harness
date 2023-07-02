@@ -1,19 +1,38 @@
 [
   {
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+      "name": "pgweb moderators",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+      "name": "varnish_purgers",
+      "permissions": []
+    }
+  },
+  {
     "model": "auth.user",
     "pk": 1,
     "fields": {
-      "password": "9edab0a63a8e096c71b5d9c19f9a19206c8be78c5ed7590ea906f19e2cb910f0",
-      "last_login": "2023-06-03T07:23:46.123",
-      "is_superuser": false,
-      "username": "akshat",
-      "first_name": "akshat",
-      "last_name": "jaimini",
-      "email": "ajaimini_be21@thapar.edu",
-      "is_staff": false,
+      "password": "pbkdf2_sha256$260000$GB6rzHuyrukNTolccUKUWw$K+oGmLixfSY3XrYx967h2weILjmXIZMLsUPDLGlHFCc=",
+      "last_login": "2023-07-02T14:50:04",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
       "is_active": true,
-      "date_joined": "2023-06-03T07:23:46.123",
-      "groups": [],
+      "date_joined": "2023-06-30T11:11:19",
+      "groups": [
+        1,
+        2
+      ],
       "user_permissions": []
     }
   },
@@ -31,7 +50,10 @@
       "is_staff": true,
       "is_active": true,
       "date_joined": "2023-06-03T07:40:59.862",
-      "groups": [],
+      "groups": [
+        1,
+        2
+      ],
       "user_permissions": []
     }
   },

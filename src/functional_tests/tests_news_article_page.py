@@ -1,3 +1,4 @@
+import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.service import Service
@@ -108,11 +109,8 @@ class NewsFormTests(LiveServerTestCase):
             By.XPATH, "/html/body/div[2]/div/div[2]/div/form/button")
         st.click()
         alerts = self.selenium.find_elements(By.CLASS_NAME, "alert")
-        for alert in alerts:
-            print(alert.text)
         self.assertNotEqual(self.selenium.current_url,
                             self.live_server_url + "/account/news/new/")
-        print(self.selenium.current_url)
         # Submit news article for moderation
         self.selenium.find_element(
             By.XPATH, "/html/body/div[2]/div/div[2]/div/ul/li/a[2]").click()
@@ -134,7 +132,6 @@ class NewsFormTests(LiveServerTestCase):
 
         # Check Database
         articles = NewsArticle.objects.all()
-        print(articles)
         self.assertNotEqual(len(articles), 1)
 
     def test_article_delete_draft(self):
@@ -162,11 +159,8 @@ class NewsFormTests(LiveServerTestCase):
             By.XPATH, "/html/body/div[2]/div/div[2]/div/form/button")
         st.click()
         alerts = self.selenium.find_elements(By.CLASS_NAME, "alert")
-        for alert in alerts:
-            print(alert.text)
         self.assertNotEqual(self.selenium.current_url,
                             self.live_server_url + "/account/news/new/")
-        print(self.selenium.current_url)
         # Submit news article for moderation
         self.selenium.find_element(
             By.XPATH, "/html/body/div[2]/div/div[2]/div/ul/li/a[2]").click()
@@ -188,5 +182,16 @@ class NewsFormTests(LiveServerTestCase):
 
         # Check Database For article creation
         articles = NewsArticle.objects.all()
-        print(articles)
         self.assertNotEqual(len(articles), 1)
+
+    def test_news_article_render(self):
+        self.selenium.get(self.live_server_url + "/about/newsarchive/")
+        content = self.selenium.find_element(By.ID, "pgContentWrap")
+        links = content.find_elements(By.TAG_NAME, "a")
+
+        for link in links:
+            if link.text.__contains__("test news"):
+                self.assertEqual(link.text, "testnews")
+                self.assertEqual(requests.get(
+                    self.live_server_url + link.get_attribute('href')).status_code, 200)
+                break

@@ -86,5 +86,22 @@
         1
       ]
     }
+  },
+  {
+    "model": "news.newsarticle",
+    "pk": 2,
+    "fields": {
+      "modstate": 2,
+      "firstmoderator": 2,
+      "org": 1,
+      "email": 1,
+      "date": "2023-07-02",
+      "title": "testnews",
+      "content": "news test",
+      "tweeted": false,
+      "tags": [
+        1
+      ]
+    }
   }
 ]
