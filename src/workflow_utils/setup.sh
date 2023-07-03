@@ -33,8 +33,8 @@ sudo chmod +x pgweb/load_initial_data.sh
 yes | pgweb/load_initial_data.sh
 
 for entry in ../../functional_tests/*; do
-    echo "$entry"
-    cp -r "$entry" pgweb/
+	echo "$entry"
+	cp -r "$entry" pgweb/
 done
 
 cp -r ../../utils pgweb/
