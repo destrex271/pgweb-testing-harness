@@ -1,24 +1,27 @@
-on:
+'on':
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches:
+      - main
+  workflow_dispatch: null
 jobs:
   run-tests:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        pg_version: [15]
+        pg_version:
+          - 15
     services:
       postgres:
-        image: postgres:${{ matrix.pg_version }}
+        image: 'postgres:${{ matrix.pg_version }}'
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: pgs
-        ports: [5432:5432]
+        ports:
+          - '5432:5432'
         options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries
-          5
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout Current Repository
         uses: actions/checkout@v3
