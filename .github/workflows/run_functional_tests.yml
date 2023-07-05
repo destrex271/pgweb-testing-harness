@@ -1,3 +1,4 @@
+---
 on:
   push:
     branches: [main]
@@ -15,19 +16,18 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: pgs
-        ports: ['5432:5432']
+        ports: [5432:5432]
         options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries
+          5
     steps:
       - name: Checkout Current Repository
         uses: actions/checkout@v3
       - name: Clone and shift tests
-        run: |-
-          cd src/workflow_utils
-          chmod +x setup.sh
-          ls
-          ./setup.sh
+        run: cd src/workflow_utils && chmod +x setup.sh && ./setup.sh
+      - name: Print
+        run: ls src/ && ls ../
       - uses: actions/upload-artifact@v3
         with:
           name: test-log
-          path: ./final_report.log
+          path: ./src/final_report.log

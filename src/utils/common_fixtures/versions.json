@@ -1,0 +1,18 @@
+[
+  {
+    "model": "core.version",
+    "pk": 27,
+    "fields": {
+      "tree": "15.0",
+      "latestminor": 3,
+      "reldate": "2023-07-04",
+      "current": true,
+      "supported": true,
+      "testing": 0,
+      "docsloaded": "2023-07-04T07:36:48",
+      "docsgit": "",
+      "firstreldate": "2023-07-04",
+      "eoldate": "2023-07-04"
+    }
+  }
+]

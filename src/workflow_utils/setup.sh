@@ -10,7 +10,7 @@ git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
 # Build System dependencies
-sudo apt update && sudo apt-get install -y postgresql-client python3-pip firefox libnss3
+sudo apt update && sudo apt-get install -y postgresql-client python3-pip firefox libnss3 libtidy-dev
 
 pg_isready --host=localhost
 
@@ -28,9 +28,6 @@ echo -e $conf >>pgweb/settings_local.py
 echo -e $database >>pgweb/settings_local.py
 cat pgweb/settings_local.py
 
-# Scripts to load initial data
-sudo chmod +x pgweb/load_initial_data.sh
-yes | pgweb/load_initial_data.sh
 
 for entry in ../../functional_tests/*; do
 	echo "$entry"
@@ -45,14 +42,25 @@ ls pgweb
 export DJANGO_SETTINGS_MODULE=pgweb.settings
 # coverage run --source='.' manage.py test --pattern="tests_*.py" --keepdb
 
+
 # Migrations
 ./manage.py makemigrations
 ./manage.py migrate
 
+# Load version fixtures
+PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
+# Scripts to load initial data
+sudo chmod +x pgweb/load_initial_data.sh
+yes | ./pgweb/load_initial_data.sh
+
+./manage.py loaddata ../../utils/common_fixtures/versions.json
+
 # coverage run --source='.' manage.py test --pattern="tests_ev*.py" --keepdb
 # cat "\t\t\t\tFINAL REPORT" >final_report.txt
-./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
-# ./manage.py test --pattern="tests_products_*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
+# ./manage.py test --pattern="tests_bug*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
+ls ../../
+./manage.py test --pattern="tests_bug*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+# ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../src/final_report.log
 
 # echo -e "Final Report"
 # cat final_report.txt
