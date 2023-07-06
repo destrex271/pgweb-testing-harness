@@ -132,6 +132,7 @@ def parse_directory(dirname):
             yield fn, lambda: open(os.path.join(dirname, fn), 'rb')
 
 
+
 # Main execution
 parser = OptionParser(
     usage="usage: %prog [options] <version> <tarfile|directory>")
