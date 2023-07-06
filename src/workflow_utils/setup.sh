@@ -18,6 +18,7 @@ pg_isready --host=localhost
 pip install -r requirements.txt
 pip install -r ../../../requirements.txt
 
+
 # Create Database & add procedures
 PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE pgmsdb;"
 PGPASSWORD=postgres psql -h localhost -U postgres -d pgmsdb -f sql/varnish_local.sql
@@ -30,8 +31,8 @@ cat pgweb/settings_local.py
 
 
 for entry in ../../functional_tests/*; do
-	echo "$entry"
-	cp -r "$entry" pgweb/
+    echo "$entry"
+    cp -r "$entry" pgweb/
 done
 
 cp -r ../../utils pgweb/
@@ -53,17 +54,22 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 sudo chmod +x pgweb/load_initial_data.sh
 yes | ./pgweb/load_initial_data.sh
 
-./manage.py loaddata ../../utils/common_fixtures/versions.json
+# ./manage.py loaddata ../../utils/common_fixtures/versions.json
+mv pgweb/utils/download_docs.py pgweb/
+mv pgweb/utils/docload.py .
+# ls pgweb
+python pgweb/download_docs.py
+# ./manage.py loaddata versions.json
 
 # coverage run --source='.' manage.py test --pattern="tests_ev*.py" --keepdb
 # cat "\t\t\t\tFINAL REPORT" >final_report.txt
 # ./manage.py test --pattern="tests_bug*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
-ls ../../
+# ls ../../
 # ./manage.py test --pattern="tests_bug*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 cat ../../final_report.log
 
-# echo -e "Final Report"
-# cat final_report.txt
+echo -e "Final Report"
+cat final_report.txt
 
 PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE pgmsdb;"
