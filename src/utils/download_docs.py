@@ -92,7 +92,7 @@ def setup_documentation():
             fixture.append(obj)
             i += 1
 
-    print(fixture)
+    # print(fixture)
 
     # Save JSON to a file
     with open('versions.json', 'w+') as file:
@@ -104,8 +104,6 @@ def setup_documentation():
     # download all documentation files
     for key in download_map:
         wget.download(download_map[key])
-        print("Downloaded")
-    
     
     for version, _ in download_map.items():
         versk = version.replace('beta', '.')

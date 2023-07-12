@@ -59,28 +59,48 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
         varnish_cache()
-        download_map = setup_documentation()
         cls.vers_list = []
+        download_map = setup_documentation()
         for version, _ in download_map.items():
             cls.vers_list.append(version)
-        # i = 0
-        # print(Version.objects.all())
-        # for obj in Version.objects.all():
-        #     k = cls.vers_list[i]
-        #     install_docs(int(obj.tree), "postgresql-" + k + ".tar.gz", Version)
-        #     i += 1
-
+       
     @classmethod
     def tearDownClass(cls) -> None:
         cls.selenium.quit()
         super().tearDownClass()
 
-    def test_render_all_versions_as_links(self):
+    def test_rendered_documentation(self):
+
         self.selenium.get(self.live_server_url + "/docs/")
         links = self.selenium.find_element(
             By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
         link_list = []
-        for link in links:
-            link_list.append(link.text[1:])
 
-        print(link_list)
+        for link in links:
+            if link.text.isnumeric():
+                link_list.append(link.text)
+
+        lvers_list = []
+        for a in self.vers_list:
+            ver = a
+            ver = ver.replace('beta', '.')
+            ver = ver.split('.')
+            lvers_list.append(ver[0])
+
+        self.assertEqual(lvers_list, link_list)  # Check if all versions are rendered as links
+
+        self.selenium.get(self.live_server_url + "/docs/")
+        links = self.selenium.find_element(
+            By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
+    
+        link_hrefs = {}
+        for link in links:
+            if link.text.isnumeric():
+                link_hrefs[link.text] = self.live_server_url + link.get_attribute("href") 
+
+        for version, url in link_hrefs.items():
+            print("Testing > ", version)
+            self.selenium.get(url)
+    
+        print(link_hrefs)
+
