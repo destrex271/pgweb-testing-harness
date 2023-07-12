@@ -53,14 +53,9 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # yes | ./pgweb/load_initial_data.sh
 # echo "Loaded data"
 
-# mv pgweb/utils/download_docs.py pgweb/
-# mv pgweb/utils/docload.py .
-# python pgweb/download_docs.py
-
-
-yes | ./pgweb/load_initial_data.sh
-# ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-./manage.py test --pattern="tests_doc*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+# yes | ./pgweb/load_initial_data.sh
+./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+# ./manage.py test --pattern="tests_doc*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 # cat ../../final_report.log
 
 
