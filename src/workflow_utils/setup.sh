@@ -1,6 +1,6 @@
 # Settings for settings_local.py
 conf='DEBUG=True\nSITE_ROOT="http://localhost:8000"\nSESSION_COOKIE_SECURE=False\nSESSION_COOKIE_DOMAIN=None\nCSRF_COOKIE_SECURE=False\nCSRF_COOKIE_DOMAIN=None\nALLOWED_HOSTS=["*"]\nSTATIC_ROOT = "/var/www/example.com/static/"'
-database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql',\n\t\t'NAME': 'pgmsdb',\n\t\t'PORT': 5432,\n\t\t'PASSWORD': 'postgres',\n\t\t'HOST' : 'localhost',\n\t\t'USER': 'postgres'\n\t}\n}"
+database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql',\n\t\t'NAME': 'db',\n\t\t'PORT': 5432,\n\t\t'PASSWORD': 'postgres',\n\t\t'HOST' : 'localhost',\n\t\t'USER': 'postgres'\n\t}\n}"
 # database = "DATABASES={\n\t'default' : {\n\t\t'ENGINE': 'django.db.backends.sqlite3','NAME':'db'}}"
 
 # ------------------------------
@@ -20,8 +20,8 @@ pip install -r ../../../requirements.txt
 
 
 # Create Database & add procedures
-PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE pgmsdb;"
-PGPASSWORD=postgres psql -h localhost -U postgres -d pgmsdb -f sql/varnish_local.sql
+PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE db;"
+PGPASSWORD=postgres psql -h localhost -U postgres -d db -f sql/varnish_local.sql
 
 # Add Local Settings
 touch pgweb/settings_local.py
@@ -41,8 +41,6 @@ ls pgweb
 
 # Run all the tests
 export DJANGO_SETTINGS_MODULE=pgweb.settings
-# coverage run --source='.' manage.py test --pattern="tests_*.py" --keepdb
-
 
 # Migrations
 ./manage.py makemigrations
@@ -51,25 +49,19 @@ export DJANGO_SETTINGS_MODULE=pgweb.settings
 # Load version fixtures
 PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # Scripts to load initial data
-sudo chmod +x pgweb/load_initial_data.sh
+# sudo chmod +x pgweb/load_initial_data.sh
+# yes | ./pgweb/load_initial_data.sh
+# echo "Loaded data"
+
+# mv pgweb/utils/download_docs.py pgweb/
+# mv pgweb/utils/docload.py .
+# python pgweb/download_docs.py
+
+
 yes | ./pgweb/load_initial_data.sh
+# ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+./manage.py test --pattern="tests_doc*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+# cat ../../final_report.log
 
-# ./manage.py loaddata ../../utils/common_fixtures/versions.json
-mv pgweb/utils/download_docs.py pgweb/
-mv pgweb/utils/docload.py .
-# ls pgweb
-python pgweb/download_docs.py
-# ./manage.py loaddata versions.json
 
-# coverage run --source='.' manage.py test --pattern="tests_ev*.py" --keepdb
-# cat "\t\t\t\tFINAL REPORT" >final_report.txt
-# ./manage.py test --pattern="tests_bug*.py" --keepdb --verbosity=2 2>&1 | tee -a final_report.log
-# ls ../../
-# ./manage.py test --pattern="tests_bug*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-cat ../../final_report.log
-
-echo -e "Final Report"
-cat final_report.txt
-
-PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE pgmsdb;"
+PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE db;"
