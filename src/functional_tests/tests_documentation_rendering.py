@@ -6,7 +6,12 @@ from selenium import webdriver
 from django.test.testcases import call_command, connections
 from django.contrib.staticfiles.testing import LiveServerTestCase
 
-from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, varnish_cache
+from .extra_utils.util_functions import varnish_cache
+from .utils.download_docs import setup_documentation
+from .utils.docload import install_docs
+
+# Core Models
+from .core.models import Version
 
 
 # Fix for CASCADE TRUNCATE FK error
@@ -39,10 +44,7 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 
-class BugReportsForm(LiveServerTestCase):
-
-    fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
-                'pgweb/fixtures/organisations.json']
+class DocumentationRenderTests(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -56,40 +58,30 @@ class BugReportsForm(LiveServerTestCase):
         serv = Service(executable_path=GeckoDriverManager().install())
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
-
-        # dummy data
-        cls.name = "Dummy Bug"
-
         varnish_cache()
+        download_map = setup_documentation()
+        cls.vers_list = []
+        for version, _ in download_map.items():
+            cls.vers_list.append(version)
+        i = 0
+        print(Version.objects.all())
+        for obj in Version.objects.all():
+            k = cls.vers_list[i]
+            print(k)
+            install_docs(int(obj.tree), "postgresql-" + k + ".tar.gz", Version)
+            i += 1
 
     @classmethod
     def tearDownClass(cls) -> None:
         cls.selenium.quit()
         super().tearDownClass()
 
-    def tests_bug_report_submit(self):
-        # Login user by setting session cookie
-        self.selenium.get(self.live_server_url + "/")
-        ck = generate_session_cookie(create_permitted_user())
-        self.selenium.add_cookie(ck)
+    def test_render_all_versions_as_links(self):
+        self.selenium.get(self.live_server_url + "/docs/")
+        links = self.selenium.find_element(
+            By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
+        link_list = []
+        for link in links:
+            link_list.append(link.text[1:])
 
-        # Routing to main page to execute tests
-        self.selenium.get(self.live_server_url + "/account/submitbug/")
-
-        self.selenium.find_element(
-            By.ID, self.prefix + "name").send_keys(self.name)
-        self.selenium.find_element(
-            By.ID, self.prefix + "pgversion").find_elements(By.TAG_NAME, "option")[1]
-        self.selenium.find_element(
-            By.ID, self.prefix + "os").send_keys("Linux x86_64")
-        self.selenium.find_element(By.ID, self.prefix + "shortdesc").send_keys(
-            "This is a short description for this dummy bug")
-        self.selenium.find_element(By.ID, self.prefix + "details").send_keys(
-            "These are the details of the Dummy Bug:\n\t1. Bug 1\n\t2. Bug 2")
-
-        # submit bug
-        self.selenium.find_element(
-            By.XPATH, "/html/body/div[2]/div/div[2]/div/form/button").click()
-
-        self.selenium.find_element(
-            By.ID, self.prefix + "pgversion").find_elements(By.TAG_NAME, "option")[1]
+        print(link_list)
