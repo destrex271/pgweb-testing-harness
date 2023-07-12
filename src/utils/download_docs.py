@@ -103,9 +103,20 @@ def setup_documentation():
 
     # download all documentation files
     for key in download_map:
-        print('Downloading v' + key + " ....... " + download_map[key])
-        with open(os.devnull, 'w') as fp:
-            wget.download(download_map[key])
+        wget.download(download_map[key])
         print("Downloaded")
     
+    
+    for version, _ in download_map.items():
+        versk = version.replace('beta', '.')
+        vers = versk.split('.')
+    
+        # print("Loading.. "+"postgresql-" + str(version) + ".tar.gz")
+        subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
+                                 "postgresql-" + str(version) + ".tar.gz"])
+        # p.wait()
+
     return download_map
+
+# if __name__ == "__main__":
+#     setup_documentation()

@@ -8,7 +8,7 @@ from django.contrib.staticfiles.testing import LiveServerTestCase
 
 from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
-from .utils.docload import install_docs
+# from .utils.docload import install_docs
 
 # Core Models
 from .core.models import Version
@@ -63,12 +63,12 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.vers_list = []
         for version, _ in download_map.items():
             cls.vers_list.append(version)
-        i = 0
-        print(Version.objects.all())
-        for obj in Version.objects.all():
-            k = cls.vers_list[i]
-            install_docs(int(obj.tree), "postgresql-" + k + ".tar.gz", Version)
-            i += 1
+        # i = 0
+        # print(Version.objects.all())
+        # for obj in Version.objects.all():
+        #     k = cls.vers_list[i]
+        #     install_docs(int(obj.tree), "postgresql-" + k + ".tar.gz", Version)
+        #     i += 1
 
     @classmethod
     def tearDownClass(cls) -> None:
