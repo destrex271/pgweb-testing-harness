@@ -27,7 +27,7 @@ def prepare_json_template(id_, version, latest, cur: bool):
             "docsloaded": "2023-07-04T07:36:48",
             "docsgit": "",
             "firstreldate": "2023-07-04",
-            "eoldate": "2023-07-04"
+            "eoldate": "3000-07-04"
         }
     }
 
@@ -109,17 +109,3 @@ def setup_documentation():
         print("Downloaded")
     
     return download_map
-    
-    # for version, _ in download_map.items():
-    #     versk = version.replace('beta', '.')
-    #     vers = versk.split('.')
-    #     print("Loading version ", vers[0].count(" "))
-    
-    #     # print("Loading.. "+"postgresql-" + str(version) + ".tar.gz")
-    #     subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
-    #                              "postgresql-" + str(version) + ".tar.gz"])
-    #     print("Loaded")
-    #     # p.wait()
-
-# if __name__ == "__main__":
-#     setup_documentation()

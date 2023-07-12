@@ -67,7 +67,6 @@ class DocumentationRenderTests(LiveServerTestCase):
         print(Version.objects.all())
         for obj in Version.objects.all():
             k = cls.vers_list[i]
-            print(k)
             install_docs(int(obj.tree), "postgresql-" + k + ".tar.gz", Version)
             i += 1
 

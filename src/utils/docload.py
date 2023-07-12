@@ -11,8 +11,17 @@ import re
 import tidylib
 from optparse import OptionParser
 from configparser import ConfigParser
-
 import psycopg2
+import logging
+from psycopg2.extras import LoggingConnection
+
+logging.getLogger("loggerinformation")
+db_settings = {
+    "user": "postgres",
+    "password": "postgres",
+    "host": "localhost",
+    "database": "db"
+}
 
 # the Bootstrap grid classes that are added onto any images that are rendered in the docs
 BOOTSTRAP_FIGURE_CLASS = r'<div\1class="figure col-xl-8 col-lg-10 col-md-12"'
@@ -156,9 +165,10 @@ def parse_directory(dirname):
 #     sys.exit(1)
 
 # ver = args[0]
-
+ver = 0
 def install_docs(version, file, mdl):
     global pagecount
+    global ver
     args = [version, file]
     print('Version -> ', mdl.objects.all())
     ver = args[0]
@@ -177,17 +187,24 @@ def install_docs(version, file, mdl):
         sys.exit(1)
 
 
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger(__name__)
     connection = psycopg2.connect(
-        dbname="db", user="postgres", password="postgres", host="localhost")
+        dbname="test_db", user="postgres", password="postgres", host="localhost", connection_factory=LoggingConnection)
+    connection.initialize(logger)
 
     if not quiet:
         print("Starting load of documentation for version %s." % (ver, ))
 
     curs = connection.cursor()
+    curs.execute("SELECT * FROM core_version")
+    # x = curs.fetchall()
+    # print(x)
     # Verify that the version exists, and what we're loading
     curs.execute("SELECT current FROM core_version WHERE tree=%(v)s", {'v': ver})
     r = curs.fetchall()
     print(r)
+    print("OK")
     if len(r) != 1:
         print("Version %s not found in the system, cannot load!" % ver)
         sys.exit(1)
@@ -282,3 +299,5 @@ def install_docs(version, file, mdl):
 
     if not quiet:
         print("Done loading docs version %s (%i pages)." % (ver, pagecount))
+
+    return
