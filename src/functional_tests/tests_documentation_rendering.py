@@ -44,6 +44,47 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 
+def check_page(driver, root_url, class_obj, version):
+    urls = [root_url]
+    check_head = True
+
+    while len(urls) > 0:
+        url = urls[0]
+        print("Working on ", url)
+        driver.get(url)
+        content = driver.find_element(By.ID, "docContent")
+
+        navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
+        nav_btns = []
+        for nv_btn in navbar_buttons:
+            if nv_btn.text == "Previous" or nv_btn.text == "Next":
+                nav_btns.append(nv_btn)
+
+        text = content.text
+        heading = None
+        try:
+            heading = content.find_element(By.TAG_NAME, "h1").text
+        except:
+            heading = None
+        print("Text", len(text))
+        print("Head>", heading)
+        
+        if check_head and not heading is None:
+            class_obj.assertIn(version, heading)
+            check_head = False
+
+        class_obj.assertGreater(len(text), 100)
+
+        if len(nav_btns) > 0:
+            if nav_btns[-1].text == "Next":
+                print("Move", end=" : ")
+                urls.append(nav_btns[-1].get_attribute("href"))
+
+        del urls[0]
+
+
+
+
 class DocumentationRenderTests(LiveServerTestCase):
 
     @classmethod
@@ -100,24 +141,6 @@ class DocumentationRenderTests(LiveServerTestCase):
 
         for version, url in link_hrefs.items():
             print("Testing > ", version)
-            self.selenium.get(url)
-
-            # Fetch docContent
-            content = self.selenium.find_element(By.ID, "docContent")
-
-            navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
-            nav_btns = []
-            for nv_btn in navbar_buttons:
-                if nv_btn.text == "Previous" or nv_btn.text == "Next":
-                    nav_btns.append(nv_btn)
-
-            text = content.text
-            print("Text", text)
-            print("Head>", content.find_element(By.TAG_NAME, "h1").text)
-
-            if nav_btns[-1].text == "Next":
-                print("Move")
-                nav_btns[-1].click()
-    
+            check_page(self.selenium, url, self, version)    
         print(link_hrefs)
 
