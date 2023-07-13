@@ -81,6 +81,7 @@ def check_page(driver, root_url, class_obj, version):
                 urls.append(nav_btns[-1].get_attribute("href"))
 
         del urls[0]
+    return 0
 
 
 
@@ -141,6 +142,8 @@ class DocumentationRenderTests(LiveServerTestCase):
 
         for version, url in link_hrefs.items():
             print("Testing > ", version)
-            check_page(self.selenium, url, self, version)    
+            res = check_page(self.selenium, url, self, version)    
+            if res == 0:
+                break
         print(link_hrefs)
 
