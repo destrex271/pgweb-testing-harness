@@ -8,7 +8,7 @@ from django.contrib.staticfiles.testing import LiveServerTestCase
 
 from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
-from .utils.docload import install_docs
+# from .utils.docload import install_docs
 
 # Core Models
 from .core.models import Version
@@ -44,6 +44,48 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 
+def check_page(driver, root_url, class_obj, version):
+    urls = [root_url]
+    check_head = True
+
+    while len(urls) > 0:
+        url = urls[0]
+        print("Working on ", url)
+        driver.get(url)
+        content = driver.find_element(By.ID, "docContent")
+
+        navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
+        nav_btns = []
+        for nv_btn in navbar_buttons:
+            if nv_btn.text == "Previous" or nv_btn.text == "Next":
+                nav_btns.append(nv_btn)
+
+        text = content.text
+        heading = None
+        try:
+            heading = content.find_element(By.TAG_NAME, "h1").text
+        except:
+            heading = None
+        print("Text", len(text))
+        print("Head>", heading)
+        
+        if check_head and not heading is None:
+            class_obj.assertIn(version, heading)
+            check_head = False
+
+        class_obj.assertGreater(len(text), 100)
+
+        if len(nav_btns) > 0:
+            if nav_btns[-1].text == "Next":
+                print("Move", end=" : ")
+                urls.append(nav_btns[-1].get_attribute("href"))
+
+        del urls[0]
+    return 0
+
+
+
+
 class DocumentationRenderTests(LiveServerTestCase):
 
     @classmethod
@@ -59,28 +101,49 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
         varnish_cache()
-        download_map = setup_documentation()
         cls.vers_list = []
+        download_map = setup_documentation()
         for version, _ in download_map.items():
             cls.vers_list.append(version)
-        i = 0
-        print(Version.objects.all())
-        for obj in Version.objects.all():
-            k = cls.vers_list[i]
-            install_docs(int(obj.tree), "postgresql-" + k + ".tar.gz", Version)
-            i += 1
-
+       
     @classmethod
     def tearDownClass(cls) -> None:
         cls.selenium.quit()
         super().tearDownClass()
 
-    def test_render_all_versions_as_links(self):
+    def test_rendered_documentation(self):
+
         self.selenium.get(self.live_server_url + "/docs/")
         links = self.selenium.find_element(
             By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
         link_list = []
-        for link in links:
-            link_list.append(link.text[1:])
 
-        print(link_list)
+        for link in links:
+            if link.text.isnumeric():
+                link_list.append(link.text)
+
+        lvers_list = []
+        for a in self.vers_list:
+            ver = a
+            ver = ver.replace('beta', '.')
+            ver = ver.split('.')
+            lvers_list.append(ver[0])
+
+        self.assertEqual(lvers_list, link_list)  # Check if all versions are rendered as links
+
+        self.selenium.get(self.live_server_url + "/docs/")
+        links = self.selenium.find_element(
+            By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
+    
+        link_hrefs = {}
+        for link in links:
+            if link.text.isnumeric():
+                link_hrefs[link.text] = link.get_attribute("href") 
+
+        for version, url in link_hrefs.items():
+            print("Testing > ", version)
+            res = check_page(self.selenium, url, self, version)    
+            if res == 0:
+                break
+        print(link_hrefs)
+

@@ -50,7 +50,7 @@ def setup_documentation():
     for link in links:
         if '.' in link.text:
             vc = link.text.split('.')[0]
-            if link.text[0] == 'v' and vc not in verk and int(vc[1:]) > 12:
+            if link.text[0] == 'v' and vc not in verk and int(vc[1:]) > 10:
                 download_map[link.text[1:]] = download_url + \
                     link.text + "/postgresql-" + link.text[1:] + ".tar.gz"
                 vers = link.text.split('.')[0]
@@ -92,7 +92,7 @@ def setup_documentation():
             fixture.append(obj)
             i += 1
 
-    print(fixture)
+    # print(fixture)
 
     # Save JSON to a file
     with open('versions.json', 'w+') as file:
@@ -103,9 +103,18 @@ def setup_documentation():
 
     # download all documentation files
     for key in download_map:
-        print('Downloading v' + key + " ....... " + download_map[key])
-        with open(os.devnull, 'w') as fp:
-            wget.download(download_map[key])
-        print("Downloaded")
+        wget.download(download_map[key])
     
+    for version, _ in download_map.items():
+        versk = version.replace('beta', '.')
+        vers = versk.split('.')
+    
+        # print("Loading.. "+"postgresql-" + str(version) + ".tar.gz")
+        subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
+                                 "postgresql-" + str(version) + ".tar.gz"])
+        # p.wait()
+
     return download_map
+
+# if __name__ == "__main__":
+#     setup_documentation()
