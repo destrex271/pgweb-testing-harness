@@ -96,11 +96,28 @@ class DocumentationRenderTests(LiveServerTestCase):
         link_hrefs = {}
         for link in links:
             if link.text.isnumeric():
-                link_hrefs[link.text] = self.live_server_url + link.get_attribute("href") 
+                link_hrefs[link.text] = link.get_attribute("href") 
 
         for version, url in link_hrefs.items():
             print("Testing > ", version)
             self.selenium.get(url)
+
+            # Fetch docContent
+            content = self.selenium.find_element(By.ID, "docContent")
+
+            navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
+            nav_btns = []
+            for nv_btn in navbar_buttons:
+                if nv_btn.text == "Previous" or nv_btn.text == "Next":
+                    nav_btns.append(nv_btn)
+
+            text = content.text
+            print("Text", text)
+            print("Head>", content.find_element(By.TAG_NAME, "h1").text)
+
+            if nav_btns[-1].text == "Next":
+                print("Move")
+                nav_btns[-1].click()
     
         print(link_hrefs)
 

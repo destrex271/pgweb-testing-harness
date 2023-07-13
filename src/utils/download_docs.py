@@ -50,7 +50,7 @@ def setup_documentation():
     for link in links:
         if '.' in link.text:
             vc = link.text.split('.')[0]
-            if link.text[0] == 'v' and vc not in verk and int(vc[1:]) > 12:
+            if link.text[0] == 'v' and vc not in verk and int(vc[1:]) > 10:
                 download_map[link.text[1:]] = download_url + \
                     link.text + "/postgresql-" + link.text[1:] + ".tar.gz"
                 vers = link.text.split('.')[0]
