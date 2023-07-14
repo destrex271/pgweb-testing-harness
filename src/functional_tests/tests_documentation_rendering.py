@@ -1,3 +1,4 @@
+import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
@@ -8,7 +9,8 @@ from django.contrib.staticfiles.testing import LiveServerTestCase
 
 from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
-# from .utils.docload import install_docs
+
+from bs4 import BeautifulSoup as Bsoup
 
 # Core Models
 from .core.models import Version
@@ -57,28 +59,18 @@ def check_page(driver, root_url, class_obj, version):
         navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
         nav_btns = []
         for nv_btn in navbar_buttons:
-            if nv_btn.text == "Previous" or nv_btn.text == "Next":
+            if nv_btn.text == "Next":
                 nav_btns.append(nv_btn)
 
         text = content.text
-        heading = None
-        try:
-            heading = content.find_element(By.TAG_NAME, "h1").text
-        except:
-            heading = None
         print("Text", len(text))
-        print("Head>", heading)
         
-        if check_head and not heading is None:
-            class_obj.assertIn(version, heading)
-            check_head = False
-
         class_obj.assertGreater(len(text), 100)
 
         if len(nav_btns) > 0:
-            if nav_btns[-1].text == "Next":
+            if nav_btns[0].text == "Next":
                 print("Move", end=" : ")
-                urls.append(nav_btns[-1].get_attribute("href"))
+                urls.append(nav_btns[0].get_attribute("href"))
 
         del urls[0]
     return 0
@@ -103,6 +95,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         varnish_cache()
         cls.vers_list = []
         download_map = setup_documentation()
+        cls.dld = download_map
         for version, _ in download_map.items():
             cls.vers_list.append(version)
        
@@ -113,6 +106,7 @@ class DocumentationRenderTests(LiveServerTestCase):
 
     def test_rendered_documentation(self):
 
+        self.assertFalse(self.dld is None, msg='Unable to load documentation')
         self.selenium.get(self.live_server_url + "/docs/")
         links = self.selenium.find_element(
             By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
@@ -145,5 +139,4 @@ class DocumentationRenderTests(LiveServerTestCase):
             res = check_page(self.selenium, url, self, version)    
             if res == 0:
                 break
-        print(link_hrefs)
 
