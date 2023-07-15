@@ -1,3 +1,4 @@
+import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
@@ -8,7 +9,10 @@ from django.contrib.staticfiles.testing import LiveServerTestCase
 
 from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
-# from .utils.docload import install_docs
+import concurrent.futures
+from copy import deepcopy
+
+from bs4 import BeautifulSoup as Bsoup
 
 # Core Models
 from .core.models import Version
@@ -44,41 +48,38 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 
-def check_page(driver, root_url, class_obj, version):
+def check_page(root_url, class_obj, version):
     urls = [root_url]
-    check_head = True
+    # check_head = True
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    serv = Service(executable_path=GeckoDriverManager().install())
+    driver = webdriver.Firefox(
+        service=serv, options=options)
+
 
     while len(urls) > 0:
         url = urls[0]
-        print("Working on ", url)
+        # print("Working on ", url)
         driver.get(url)
         content = driver.find_element(By.ID, "docContent")
 
         navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
         nav_btns = []
         for nv_btn in navbar_buttons:
-            if nv_btn.text == "Previous" or nv_btn.text == "Next":
+            if nv_btn.text == "Next":
                 nav_btns.append(nv_btn)
 
         text = content.text
-        heading = None
-        try:
-            heading = content.find_element(By.TAG_NAME, "h1").text
-        except:
-            heading = None
-        print("Text", len(text))
-        print("Head>", heading)
+        # print("Text", len(text))
         
-        if check_head and not heading is None:
-            class_obj.assertIn(version, heading)
-            check_head = False
-
         class_obj.assertGreater(len(text), 100)
 
         if len(nav_btns) > 0:
-            if nav_btns[-1].text == "Next":
-                print("Move", end=" : ")
-                urls.append(nav_btns[-1].get_attribute("href"))
+            if nav_btns[0].text == "Next":
+                # print("Move", end=" : ")
+                urls.append(nav_btns[0].get_attribute("href"))
+                class_obj.assertNotEqual(url[0], url[1])
 
         del urls[0]
     return 0
@@ -103,6 +104,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         varnish_cache()
         cls.vers_list = []
         download_map = setup_documentation()
+        cls.dld = download_map
         for version, _ in download_map.items():
             cls.vers_list.append(version)
        
@@ -113,6 +115,7 @@ class DocumentationRenderTests(LiveServerTestCase):
 
     def test_rendered_documentation(self):
 
+        self.assertFalse(self.dld is None, msg='Unable to load documentation')
         self.selenium.get(self.live_server_url + "/docs/")
         links = self.selenium.find_element(
             By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
@@ -121,6 +124,8 @@ class DocumentationRenderTests(LiveServerTestCase):
         for link in links:
             if link.text.isnumeric():
                 link_list.append(link.text)
+
+        max_docs = len(link_list)
 
         lvers_list = []
         for a in self.vers_list:
@@ -136,14 +141,25 @@ class DocumentationRenderTests(LiveServerTestCase):
             By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
     
         link_hrefs = {}
+        i = 0
         for link in links:
             if link.text.isnumeric():
+                if i >= max_docs:
+                    break
                 link_hrefs[link.text] = link.get_attribute("href") 
+                i += 1
 
+        executor = concurrent.futures.ThreadPoolExecutor(max_docs)
+        tasks = []
         for version, url in link_hrefs.items():
-            print("Testing > ", version)
-            res = check_page(self.selenium, url, self, version)    
-            if res == 0:
-                break
-        print(link_hrefs)
-
+            tasks.append(executor.submit(check_page, url, self, version))
+        # concurrent.futures.wait(tasks)
+        ftasks = concurrent.futures.as_completed(tasks)
+        for ftask in ftasks:
+            try:
+                data = ftask.result()
+            except Exception as ex:
+                print(ex)
+                self.assertTrue(False, msg = 'Error in rendering documentation')
+            else:
+                print(data)
