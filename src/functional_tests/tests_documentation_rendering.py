@@ -82,6 +82,7 @@ def check_page(root_url, class_obj, version):
                 class_obj.assertNotEqual(url[0], url[1])
 
         del urls[0]
+    driver.close()
     return 0
 
 
@@ -153,6 +154,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         tasks = []
         for version, url in link_hrefs.items():
             tasks.append(executor.submit(check_page, url, self, version))
+            self.selenium.
         # concurrent.futures.wait(tasks)
         ftasks = concurrent.futures.as_completed(tasks)
         for ftask in ftasks:
