@@ -154,7 +154,6 @@ class DocumentationRenderTests(LiveServerTestCase):
         tasks = []
         for version, url in link_hrefs.items():
             tasks.append(executor.submit(check_page, url, self, version))
-            self.selenium.
         # concurrent.futures.wait(tasks)
         ftasks = concurrent.futures.as_completed(tasks)
         for ftask in ftasks:
