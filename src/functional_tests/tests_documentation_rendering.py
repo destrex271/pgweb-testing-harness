@@ -9,6 +9,8 @@ from django.contrib.staticfiles.testing import LiveServerTestCase
 
 from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
+import concurrent.futures
+from copy import deepcopy
 
 from bs4 import BeautifulSoup as Bsoup
 
@@ -46,13 +48,19 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 
-def check_page(driver, root_url, class_obj, version):
+def check_page(root_url, class_obj, version):
     urls = [root_url]
-    check_head = True
+    # check_head = True
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    serv = Service(executable_path=GeckoDriverManager().install())
+    driver = webdriver.Firefox(
+        service=serv, options=options)
+
 
     while len(urls) > 0:
         url = urls[0]
-        print("Working on ", url)
+        # print("Working on ", url)
         driver.get(url)
         content = driver.find_element(By.ID, "docContent")
 
@@ -63,14 +71,15 @@ def check_page(driver, root_url, class_obj, version):
                 nav_btns.append(nv_btn)
 
         text = content.text
-        print("Text", len(text))
+        # print("Text", len(text))
         
         class_obj.assertGreater(len(text), 100)
 
         if len(nav_btns) > 0:
             if nav_btns[0].text == "Next":
-                print("Move", end=" : ")
+                # print("Move", end=" : ")
                 urls.append(nav_btns[0].get_attribute("href"))
+                class_obj.assertNotEqual(url[0], url[1])
 
         del urls[0]
     return 0
@@ -116,6 +125,8 @@ class DocumentationRenderTests(LiveServerTestCase):
             if link.text.isnumeric():
                 link_list.append(link.text)
 
+        max_docs = len(link_list)
+
         lvers_list = []
         for a in self.vers_list:
             ver = a
@@ -130,13 +141,25 @@ class DocumentationRenderTests(LiveServerTestCase):
             By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
     
         link_hrefs = {}
+        i = 0
         for link in links:
             if link.text.isnumeric():
+                if i >= max_docs:
+                    break
                 link_hrefs[link.text] = link.get_attribute("href") 
+                i += 1
 
+        executor = concurrent.futures.ThreadPoolExecutor(max_docs)
+        tasks = []
         for version, url in link_hrefs.items():
-            print("Testing > ", version)
-            res = check_page(self.selenium, url, self, version)    
-            if res == 0:
-                break
-
+            tasks.append(executor.submit(check_page, url, self, version))
+        # concurrent.futures.wait(tasks)
+        ftasks = concurrent.futures.as_completed(tasks)
+        for ftask in ftasks:
+            try:
+                data = ftask.result()
+            except Exception as ex:
+                print(ex)
+                self.assertTrue(False, msg = 'Error in rendering documentation')
+            else:
+                print(data)
