@@ -11,6 +11,7 @@ from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
 import concurrent.futures
 from copy import deepcopy
+import time 
 
 from bs4 import BeautifulSoup as Bsoup
 
@@ -51,19 +52,19 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 def check_page(root_url, class_obj, version):
     urls = [root_url]
     # check_head = True
-    options = webdriver.FirefoxOptions()
-    options.headless = True
-    serv = Service(executable_path=GeckoDriverManager().install())
-    driver = webdriver.Firefox(
-        service=serv, options=options)
 
 
     while len(urls) > 0:
+        options = webdriver.FirefoxOptions()
+        options.headless = True
+        serv = Service(executable_path=GeckoDriverManager().install())
+        driver = webdriver.Firefox(
+            service=serv, options=options)
         url = urls[0]
-        # print("Working on ", url)
+        print("Queued: ", url)
         driver.get(url)
         content = driver.find_element(By.ID, "docContent")
-
+        time.sleep(3)
         navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
         nav_btns = []
         for nv_btn in navbar_buttons:
@@ -71,7 +72,7 @@ def check_page(root_url, class_obj, version):
                 nav_btns.append(nv_btn)
 
         text = content.text
-        # print("Text", len(text))
+        print("Text length from " + url + " : " + str(len(text)))
         
         class_obj.assertGreater(len(text), 100)
 
@@ -80,9 +81,8 @@ def check_page(root_url, class_obj, version):
                 # print("Move", end=" : ")
                 urls.append(nav_btns[0].get_attribute("href"))
                 class_obj.assertNotEqual(url[0], url[1])
-
+        driver.close()
         del urls[0]
-    driver.close()
     return 0
 
 
