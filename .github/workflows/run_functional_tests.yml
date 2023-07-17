@@ -2,9 +2,10 @@
   push:
     branches:
       - main
+      - fix/seperate_jobs
   workflow_dispatch: null
 jobs:
-  run-tests:
+  run-quick-tests:
     runs-on: ubuntu-20.04
     strategy:
       matrix:

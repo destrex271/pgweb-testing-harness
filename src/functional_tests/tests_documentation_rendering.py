@@ -51,38 +51,29 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 
 def check_page(root_url, class_obj, version):
     urls = [root_url]
-    # check_head = True
-
+    print("Root url -> ", urls[0])
+    base = root_url[:root_url.rfind("/")]
 
     while len(urls) > 0:
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        serv = Service(executable_path=GeckoDriverManager().install())
-        driver = webdriver.Firefox(
-            service=serv, options=options)
+
         url = urls[0]
         print("Queued: ", url)
-        driver.get(url)
-        content = driver.find_element(By.ID, "docContent")
-        time.sleep(3)
-        navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
-        nav_btns = []
-        for nv_btn in navbar_buttons:
-            if nv_btn.text == "Next":
-                nav_btns.append(nv_btn)
-
-        text = content.text
-        print("Text length from " + url + " : " + str(len(text)))
-        
-        class_obj.assertGreater(len(text), 100)
-
-        if len(nav_btns) > 0:
-            if nav_btns[0].text == "Next":
-                # print("Move", end=" : ")
-                urls.append(nav_btns[0].get_attribute("href"))
-                class_obj.assertNotEqual(url[0], url[1])
-        driver.close()
+        page = requests.get(url)
+        soup = Bsoup(page.text, "html.parser")
+        content = soup.find_all(id='docContent')
+        content = content[0].get_text()
+        class_obj.assertGreater(len(content), 100)
+        print("Content Length at " + url + " : " + str(len(content)))
+        nav_btns = soup.find_all("a")
+        next_url = None
+        for btn in nav_btns:
+            if btn.get_text() == 'Next':
+                next_url = base + '/' + btn.get('href')
+        if next_url:
+            print(next_url)
+            urls.append(next_url)
         del urls[0]
+
     return 0
 
 
@@ -155,6 +146,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         for version, url in link_hrefs.items():
             tasks.append(executor.submit(check_page, url, self, version))
         # concurrent.futures.wait(tasks)
+        print(len(tasks))
         ftasks = concurrent.futures.as_completed(tasks)
         for ftask in ftasks:
             try:

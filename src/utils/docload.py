@@ -20,7 +20,7 @@ db_settings = {
     "user": "postgres",
     "password": "postgres",
     "host": "localhost",
-    "database": "test_db"
+    "database": "test_db2"
 }
 
 # the Bootstrap grid classes that are added onto any images that are rendered in the docs
@@ -189,7 +189,7 @@ else:
 # logging.basicConfig(level=logging.DEBUG)
 # logger = logging.getLogger(__name__)
 connection = psycopg2.connect(
-    dbname="test_db", user="postgres", password="postgres", host="localhost") #connection_factory=LoggingConnection)
+    dbname="test_db2", user="postgres", password="postgres", host="localhost") #connection_factory=LoggingConnection)
 # connection.initialize(logger)
 
 if not quiet:
