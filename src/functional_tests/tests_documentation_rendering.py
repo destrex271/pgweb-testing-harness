@@ -11,6 +11,7 @@ from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
 import concurrent.futures
 from copy import deepcopy
+import time 
 
 from bs4 import BeautifulSoup as Bsoup
 
@@ -63,7 +64,7 @@ def check_page(root_url, class_obj, version):
         print("Working on ", url)
         driver.get(url)
         content = driver.find_element(By.ID, "docContent")
-
+        time.sleep(3)
         navbar_buttons = content.find_element(By.CLASS_NAME, "navheader").find_elements(By.TAG_NAME, "a")
         nav_btns = []
         for nv_btn in navbar_buttons:
