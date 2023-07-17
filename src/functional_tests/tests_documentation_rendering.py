@@ -61,7 +61,7 @@ def check_page(root_url, class_obj, version):
         driver = webdriver.Firefox(
             service=serv, options=options)
         url = urls[0]
-        print("Working on ", url)
+        print("Queued: ", url)
         driver.get(url)
         content = driver.find_element(By.ID, "docContent")
         time.sleep(3)
@@ -72,7 +72,7 @@ def check_page(root_url, class_obj, version):
                 nav_btns.append(nv_btn)
 
         text = content.text
-        print("Text", len(text))
+        print("Text length from " + url + " : " + str(len(text)))
         
         class_obj.assertGreater(len(text), 100)
 
