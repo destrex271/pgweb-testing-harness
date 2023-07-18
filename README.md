@@ -34,6 +34,10 @@ After you fork and clone the repository kindly install all the required packages
 
 **_We suggest that you do so in a virtual environment to avoid any unnecessary conflicts._**
 
+To run the tests use:
+
+`act -j run-tests`
+
 Once these prerequisites have been satisfied you can follow the contribution instructions given above and write your tests. Be sure to add the  _fixture_teardown() function in the beginning of your tests to avoid unnecessary errors due to Django.
 
 If you are adding new tests kindly add them in the following format: **src/[category]/tests_*.py**.
