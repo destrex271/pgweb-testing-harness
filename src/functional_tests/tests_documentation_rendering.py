@@ -11,7 +11,7 @@ from .extra_utils.util_functions import varnish_cache
 from .utils.download_docs import setup_documentation
 import concurrent.futures
 from copy import deepcopy
-import time 
+import time
 
 from bs4 import BeautifulSoup as Bsoup
 
@@ -57,26 +57,24 @@ def check_page(root_url, class_obj, version):
     while len(urls) > 0:
 
         url = urls[0]
-        print("Queued: ", url)
+        # print("Queued: ", url)
         page = requests.get(url)
         soup = Bsoup(page.text, "html.parser")
         content = soup.find_all(id='docContent')
         content = content[0].get_text()
         class_obj.assertGreater(len(content), 100)
-        print("Content Length at " + url + " : " + str(len(content)))
+        # print("Content Length at " + url + " : " + str(len(content)))
         nav_btns = soup.find_all("a")
         next_url = None
         for btn in nav_btns:
             if btn.get_text() == 'Next':
                 next_url = base + '/' + btn.get('href')
         if next_url:
-            print(next_url)
+            # print(next_url)
             urls.append(next_url)
         del urls[0]
 
     return 0
-
-
 
 
 class DocumentationRenderTests(LiveServerTestCase):
@@ -99,7 +97,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.dld = download_map
         for version, _ in download_map.items():
             cls.vers_list.append(version)
-       
+
     @classmethod
     def tearDownClass(cls) -> None:
         cls.selenium.quit()
@@ -126,19 +124,20 @@ class DocumentationRenderTests(LiveServerTestCase):
             ver = ver.split('.')
             lvers_list.append(ver[0])
 
-        self.assertEqual(lvers_list, link_list)  # Check if all versions are rendered as links
+        # Check if all versions are rendered as links
+        self.assertEqual(lvers_list, link_list)
 
         self.selenium.get(self.live_server_url + "/docs/")
         links = self.selenium.find_element(
             By.ID, 'pgContentWrap').find_elements(By.TAG_NAME, 'a')
-    
+
         link_hrefs = {}
         i = 0
         for link in links:
             if link.text.isnumeric():
                 if i >= max_docs:
                     break
-                link_hrefs[link.text] = link.get_attribute("href") 
+                link_hrefs[link.text] = link.get_attribute("href")
                 i += 1
 
         executor = concurrent.futures.ThreadPoolExecutor(max_docs)
@@ -146,13 +145,13 @@ class DocumentationRenderTests(LiveServerTestCase):
         for version, url in link_hrefs.items():
             tasks.append(executor.submit(check_page, url, self, version))
         # concurrent.futures.wait(tasks)
-        print(len(tasks))
+        # print(len(tasks))
         ftasks = concurrent.futures.as_completed(tasks)
         for ftask in ftasks:
             try:
                 data = ftask.result()
             except Exception as ex:
                 print(ex)
-                self.assertTrue(False, msg = 'Error in rendering documentation')
+                self.assertTrue(False, msg='Error in rendering documentation')
             else:
                 print(data)
