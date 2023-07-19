@@ -82,6 +82,7 @@ def segregate_links(seln, addr):
                         urls.append(url)
                     else:
                         external_links.append(url)
+                    all_urls.append(url)
         del urls[0]
 
     print("Internal urls ", len(internal_links))
