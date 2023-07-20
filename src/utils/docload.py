@@ -141,7 +141,6 @@ def parse_directory(dirname):
             yield fn, lambda: open(os.path.join(dirname, fn), 'rb')
 
 
-
 # Main execution
 parser = OptionParser(
     usage="usage: %prog [options] <version> <tarfile|directory>")
@@ -166,12 +165,12 @@ if verbose and quiet:
 
 ver = args[0]
 # def install_docs(version, file, mdl):
-    # global pagecount
-    # global ver
-    # args = [version, file]
-    # print('Version -> ', mdl.objects.all())
-    # ver = args[0]
-    # load the configuration that is used to connect to the database
+# global pagecount
+# global ver
+# args = [version, file]
+# print('Version -> ', mdl.objects.all())
+# ver = args[0]
+# load the configuration that is used to connect to the database
 config = ConfigParser()
 config.read(os.path.join(os.path.abspath(
     os.path.dirname(__file__)), 'docload.ini'))
@@ -189,7 +188,7 @@ else:
 # logging.basicConfig(level=logging.DEBUG)
 # logger = logging.getLogger(__name__)
 connection = psycopg2.connect(
-    dbname="test_db", user="postgres", password="postgres", host="localhost") #connection_factory=LoggingConnection)
+    dbname="test_db", user="postgres", password="postgres", host="localhost")  # connection_factory=LoggingConnection)
 # connection.initialize(logger)
 
 if not quiet:
@@ -298,4 +297,3 @@ connection.close()
 
 if not quiet:
     print("Done loading docs version %s (%i pages)." % (ver, pagecount))
-

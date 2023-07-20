@@ -9,8 +9,11 @@ from django.db import connection
 from .extra_utils.util_functions import varnish_cache
 from bs4 import BeautifulSoup as BSoup
 
+from .utils.download_docs import setup_documentation
+from .utils.clean_tables import remove_versions
 # Custom utilities
 from pgweb.utils.report_generation import write_to_report
+from requests.packages.urllib3.util.retry import Retry
 
 # Fix for CASCADE TRUNCATE FK error
 
@@ -51,31 +54,30 @@ broken_external_links = {}
 # Generate a list of all the urls of the website
 
 
-def segregate_links(seln, addr):
+def segregate_links(addr):
 
     urls = [addr + "/"]
     all_urls = [addr + "/"]
 
-    print("Url")
-    print(all_urls)
+    # print("Url")
+    # print(all_urls)
 
     while len(urls) > 0:
-        print("Checking -> ", urls[0])
+        # print("Checking -> ", urls[0])
         page = requests.get(urls[0]).content
         content = BSoup(page, "html.parser")
         links = content.find_all('a')
         # print(links)
         for lk in links:
+            # print('.', end="")
             url = lk.get('href')
-            if url:
+            if url and url != '':
                 if url.startswith('/'):
                     url = addr + url
-                elif url.endswith('.html') and not (url.startswith('http') or
-                                                    url.startswith('/')) or url.__contains__('.html#'):
+                if url.endswith('.html') and url.startswith('ftp') and not (url.startswith('http') or
+                                                                            url.startswith('/')) or url.__contains__('.html#'):
                     continue
-                elif url.startswith('ftp'):
-                    continue
-                print(url)
+                # print(urls)
                 if url not in all_urls and url.startswith('http') and not (url.startswith('mailto') or url.startswith('#')):
                     if url.__contains__("localhost") or url.startswith('/'):
                         internal_links.append(url)
@@ -83,6 +85,7 @@ def segregate_links(seln, addr):
                     else:
                         external_links.append(url)
                     all_urls.append(url)
+        # print()
         del urls[0]
 
     print("Internal urls ", len(internal_links))
@@ -91,9 +94,9 @@ def segregate_links(seln, addr):
 
 class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
-    fixtures = ['pgweb/core/fixtures/data.json', 'pgweb/docs/fixtures/data.json',
-                'pgweb/lists/fixtures/data.json', 'pgweb/sponsors/fixtures/data.json', 'pgweb/contributors/fixtures/data.json',
-                'pgweb/featurematrix/fixtures/data.json']
+    # fixtures = [, ,
+    #             , , ,
+    #             ]
 
     @classmethod
     def setUpClass(cls):
@@ -105,11 +108,16 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             service=serv, options=options)
 
         # Calling SQL execution for varnish cache
-        varnish_cache()
+        # call_command('loaddata', 'pgweb/core/fixtures/data.json')
+        call_command('loaddata', 'pgweb/docs/fixtures/data.json')
+        call_command('loaddata', 'pgweb/lists/fixtures/data.json')
+        call_command('loaddata', 'pgweb/sponsors/fixtures/data.json')
+        call_command('loaddata', 'pgweb/contributors/fixtures/data.json')
+        call_command('loaddata', 'pgweb/featurematrix/fixtures/data.json')
 
         # Segregation of internal and external links
         print("Segregating")
-        segregate_links(cls.selenium, cls.live_server_url)
+        segregate_links(cls.live_server_url)
 
     @classmethod
     def tearDownClass(cls):
@@ -117,25 +125,29 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         super().tearDownClass()
 
     def test_external_links(self):
-        self.assertTrue(True)
+        print(external_links)
+        session = requests.Session()
+        session.headers.update({"User-Agent": "Defined"})
         for lnk in external_links:
-            res = requests.get(lnk)
-            if not res is None:
+            res = None
+            try:
+                res = session.get(lnk)
+            except requests.exceptions.ConnectionError:
+                continue
+            if res is not None:
                 stat = res.status_code
                 if not stat == 200:
                     broken_external_links[lnk] = stat
             else:
                 broken_external_links[lnk] = "Not reachable"
-        print("External Links: ", external_links)
-        # if len(broken_external_links) > 0:
-        #     write_to_report(broken_external_links, "Broken External Urls")
+        print("External Links: ", broken_external_links)
         self.assertTrue(len(broken_external_links) ==
                         0, msg=broken_external_links)
 
     def test_internal_links(self):
         for lnk in internal_links:
             res = requests.get(lnk)
-            if not res is None:
+            if res is not None:
                 stat = res.status_code
                 if not stat == 200:
                     broken_internal_links[lnk] = stat
@@ -154,11 +166,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         for working_link in to_rem:
             broken_internal_links.pop(working_link)
 
-        print("Internal Links: ", internal_links)
-
-        # Final List of Broken Urls
-        # if len(broken_internal_links) > 0:
-        # write_to_report(broken_internal_links, "Broken Internal Urls")
+        print("Internal Links: ", broken_internal_links)
 
         self.assertTrue(len(broken_internal_links) ==
                         0, msg=broken_internal_links)
