@@ -35,6 +35,6 @@ jobs:
           path: ./src/final_report.log
       - uses: actions/upload-artifact@v3
         with:
-          name: test-log
+          name: broken-links
           path: ./src/broken_links.log
        
