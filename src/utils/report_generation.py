@@ -1,5 +1,5 @@
-def write_to_report(listed_content: dict, title: str):
-    with open("link_functionality_report.txt", "w+") as file:
+def write_to_report(listed_content: dict, title: str, par: bool):
+    with open("../../broken_urls.log", "a+") as file:
         file.write(
             "------------------------------------------------------------\n\n\t\t")
         file.write(f"{title}\n\n")
@@ -9,7 +9,10 @@ def write_to_report(listed_content: dict, title: str):
         counter = 1
 
         for item in listed_content.keys():
-            file.write(f"\t{counter}. {item} : {listed_content[item]}\n")
+            file.write(f"\t{counter}. {item} : {listed_content[item][0]}")
+            if par:
+                file.write(f" : On Page {listed_content[item][1]}")
+            file.write('\n')
             counter += 1
         file.close()
 

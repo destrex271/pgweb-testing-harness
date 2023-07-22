@@ -54,9 +54,9 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # echo "Loaded data"
 
 # yes | ./pgweb/load_initial_data.sh
-./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-# ./manage.py test --pattern="tests_home*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-# cat ../../final_report.log
+# ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+./manage.py test --pattern="tests_home*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+cat ../../broken_urls.log
 
 
 PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE db;"
