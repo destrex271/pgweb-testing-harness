@@ -2,7 +2,6 @@
   push:
     branches:
       - main
-      - fix/seperate_jobs
   workflow_dispatch: null
 jobs:
   run-tests:
@@ -36,5 +35,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: broken-links
-          path: ./src/broken_links.log
+          path: ./src/broken_urls.log
        
