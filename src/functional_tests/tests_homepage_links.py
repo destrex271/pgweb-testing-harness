@@ -62,7 +62,7 @@ def segregate_links(addr):
     all_urls = [addr + "/"]
 
     while len(urls) > 0:
-        print("Checking -> ", urls[0])
+        # print("Checking -> ", urls[0])
         page = requests.get(urls[0]).content
         content = BSoup(page, "html.parser")
         links = content.find_all('a')
