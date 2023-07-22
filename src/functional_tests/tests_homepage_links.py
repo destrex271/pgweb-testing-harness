@@ -103,7 +103,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             service=serv, options=options)
 
         # Loading initial dummy database
-        # call_command('loaddata', 'pgweb/core/fixtures/data.json')
+        varnish_cache()
         call_command('loaddata', 'pgweb/docs/fixtures/data.json')
         call_command('loaddata', 'pgweb/lists/fixtures/data.json')
         call_command('loaddata', 'pgweb/sponsors/fixtures/data.json')
