@@ -33,3 +33,8 @@ jobs:
         with:
           name: test-log
           path: ./src/final_report.log
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-log
+          path: ./src/broken_links.log
+       
