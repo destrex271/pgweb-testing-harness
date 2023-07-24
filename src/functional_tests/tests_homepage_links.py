@@ -132,7 +132,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             if res is not None:
                 stat = res.status_code
                 if not stat == 200:
-                    broken_external_links[lnk] = [stat, parent_url_dict[lnk]]
+                    broken_external_links[lnk] = [stat, parent_url_dict[lnk].replace(
+                        self.live_server_url, 'https://www.postgresql.org')]
             else:
                 broken_external_links[lnk] = "Not reachable"
 
