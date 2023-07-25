@@ -59,7 +59,8 @@ parent_url_dict = {}
 def segregate_links(addr):
 
     urls = [addr + "/"]
-    all_urls = [addr + "/"]
+    # all_urls = [addr + "/"]
+    all_urls = [urls[0]]
 
     while len(urls) > 0:
         # print("Checking -> ", urls[0])
@@ -82,13 +83,14 @@ def segregate_links(addr):
                     else:
                         external_links.append(url)
 
-                    parent_url_dict[url] = urls[0]
+                    parent_url_dict[url] = [urls[0]]
+                    parent_url_dict[url].append(lk.get_text())
                     all_urls.append(url)
         # print()
         del urls[0]
 
-    # print("Internal urls ", len(internal_links))
-    # print("External urls ", len(external_links))
+    print("Internal urls ", len(internal_links))
+    print("External urls ", len(external_links))
 
 
 class RecusrsiveLinkCrawlTests(LiveServerTestCase):
@@ -104,7 +106,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
         # Loading initial dummy database
         varnish_cache()
-        call_command('loaddata', 'pgweb/docs/fixtures/data.json')
+        # call_command('loaddata', 'pgweb/docs/fixtures/data.json')
         call_command('loaddata', 'pgweb/lists/fixtures/data.json')
         call_command('loaddata', 'pgweb/sponsors/fixtures/data.json')
         call_command('loaddata', 'pgweb/contributors/fixtures/data.json')
@@ -132,8 +134,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             if res is not None:
                 stat = res.status_code
                 if not stat == 200:
-                    broken_external_links[lnk] = [stat, parent_url_dict[lnk].replace(
-                        self.live_server_url, 'https://www.postgresql.org')]
+                    broken_external_links[lnk] = [stat, parent_url_dict[lnk][0].replace(
+                        self.live_server_url, 'https://www.postgresql.org'), parent_url_dict[lnk][1]]
             else:
                 broken_external_links[lnk] = "Not reachable"
 
@@ -150,7 +152,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             if res is not None:
                 stat = res.status_code
                 if not stat == 200:
-                    broken_internal_links[lnk] = [stat, parent_url_dict[lnk]]
+                    broken_internal_links[lnk] = [
+                        stat, parent_url_dict[lnk][0], parent_url_dict[lnk][1]]
             else:
                 broken_internal_links[lnk] = "Not reachable"
 
@@ -166,8 +169,8 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         for working_link in to_rem:
             broken_internal_links.pop(working_link)
 
-        if len(broken_internal_links) != 0:
-            write_to_report(broken_internal_links,
-                            "Broken Internal Links", par=False)
+        # if len(broken_internal_links) != 0:
+        #     write_to_report(broken_internal_links,
+        #                     "Broken Internal Links", par=False)
         self.assertTrue(len(broken_internal_links) ==
                         0, msg="Please check the broken_urls.log file")

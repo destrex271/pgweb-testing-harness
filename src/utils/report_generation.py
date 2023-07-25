@@ -9,7 +9,8 @@ def write_to_report(listed_content: dict, title: str, par: bool):
         counter = 1
 
         for item in listed_content.keys():
-            file.write(f"\t{counter}. {item} : {listed_content[item][0]}")
+            file.write(
+                f"\t{counter}. {item} : {listed_content[item][0]}({listed_content[item][2]})")
             if par:
                 file.write(f" : On Page {listed_content[item][1]}")
             file.write('\n')
