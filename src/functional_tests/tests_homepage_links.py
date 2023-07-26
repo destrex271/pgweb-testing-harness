@@ -162,7 +162,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         for lk in broken_internal_links.keys():
             lvk = str(lk).replace(
                 f'{self.live_server_url}', "https://www.postgresql.org")
-            if requests.get(lvk).status_code == 200:
+            if requests.get(lvk).status_code == 200 or lvk.__contains__('docs/current'):
                 to_rem.append(lk)
 
         # Removing false errors

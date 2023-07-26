@@ -66,6 +66,12 @@ def check_page(root_url, class_obj, version):
         # print("Content Length at " + url + " : " + str(len(content)))
         nav_btns = soup.find_all("a")
         next_url = None
+        for lnk in nav_btns:
+            lk = lnk.get('href')
+            if not lk.startswith('http'):
+                lk = base + '/' + lk
+            stat = requests.get(lk).status_code
+            class_obj.assertTrue(stat == 200, msg="Broken Links found in documentation!")
         for btn in nav_btns:
             if btn.get_text() == 'Next':
                 next_url = base + '/' + btn.get('href')
