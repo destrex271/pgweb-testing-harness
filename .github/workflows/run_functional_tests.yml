@@ -35,6 +35,12 @@ jobs:
         with:
           name: broken-links
           path: ./src/broken_urls.log
+      - uses: actions/upload-artifact@v3
+        with:
+          name: failure_logs
+          path: ./src/failed_tests.log
+
+
 
 # send_mail:
 #   needs: run-tests

@@ -43,13 +43,13 @@ with open('../../failed_tests.log', 'w+') as fail_rep:
     commit_id = None
     try:
         with open('../../../commit_id.txt', 'r') as commit:
-            commit_id = commit.read()
+            commit_id = commit.read().strip()
     except FileNotFoundError:
         pass
     if not fail_logs:
-        fail_rep.write('No Tests Failed. The build {commit_id} is working fine!')
+        fail_rep.write(r'No Tests Failed. The build {} is working fine!'.format(commit_id))
     else:
-        fail_rep.write(r"The build {commit_id} failed the following tests:\n\n\n"+fail_logs)
+        fail_rep.write(r"The build {} failed the following tests:\n\n\n".format(commit_id) + fail_logs)
 
 with open('../../final_report.log', 'w') as report:
     report.write(report_content)
