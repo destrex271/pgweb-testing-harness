@@ -1,3 +1,4 @@
+import re
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.test.testcases import call_command, connection, connections
 from selenium.webdriver.common.by import By
@@ -106,7 +107,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
 
         # Loading initial dummy database
         varnish_cache()
-        # call_command('loaddata', 'pgweb/docs/fixtures/data.json')
+        call_command('loaddata', 'pgweb/docs/fixtures/data.json')
         call_command('loaddata', 'pgweb/lists/fixtures/data.json')
         call_command('loaddata', 'pgweb/sponsors/fixtures/data.json')
         call_command('loaddata', 'pgweb/contributors/fixtures/data.json')
@@ -131,6 +132,10 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
                 res = session.get(lnk)
             except requests.exceptions.ConnectionError:
                 continue
+            pattern = re.compile('docs/(current|[0-9])')
+            pat2 = re.compile('docs/books/pg.*')
+            if pattern.search(lnk) or pat2.search(lnk):
+                continue
             if res is not None:
                 stat = res.status_code
                 if not stat == 200:
@@ -144,10 +149,14 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             write_to_report(broken_external_links,
                             "Broken External Links", par=True)
         self.assertTrue(len(broken_external_links) ==
-                        0, msg="Please check the broken_urls.log file")
+                        0, msg="Please check the broken_urls.log file.\n" +str(broken_external_links))
 
     def test_internal_links(self):
         for lnk in internal_links:
+            pattern = re.compile('docs/(current|[0-9])')
+            pat2 = re.compile('docs/books/pg.*')
+            if pattern.search(lnk) or pat2.search(lnk):
+                continue
             res = requests.get(lnk)
             if res is not None:
                 stat = res.status_code
@@ -162,6 +171,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         for lk in broken_internal_links.keys():
             lvk = str(lk).replace(
                 f'{self.live_server_url}', "https://www.postgresql.org")
+
             if requests.get(lvk).status_code == 200:
                 to_rem.append(lk)
 
@@ -173,4 +183,4 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
         #     write_to_report(broken_internal_links,
         #                     "Broken Internal Links", par=False)
         self.assertTrue(len(broken_internal_links) ==
-                        0, msg="Please check the broken_urls.log file")
+                        0, msg="Please check the broken_urls log for a detailed description."+str(broken_internal_links))

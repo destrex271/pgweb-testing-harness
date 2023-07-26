@@ -18,6 +18,21 @@ def write_to_report(listed_content: dict, title: str, par: bool):
         file.close()
 
 
+# def write_to_report_docs(title: str, links):
+#     with open('../../broken_urls.log', 'a+') as file:
+#         file.write(
+#             "\n\n\n------------------------------------------------------------\n\n\t\t")
+#         file.write(f"{title}\n\n")
+#         file.write(
+#             "------------------------------------------------------------\n\n")
+#
+#         counter = 1
+#         for item in links:
+#             file.write(
+#                     f"\t{counter} -> {item[0]}({item[2]}) : On Page {item[1]}\n")
+#
+
+
 def auth_realted_reports_insert_title(title: str):
     with open("auth_reports.txt", "w+") as file:
         if len(file.read()) == 0:
