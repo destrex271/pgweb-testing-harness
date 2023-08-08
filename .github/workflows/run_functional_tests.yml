@@ -39,6 +39,10 @@ jobs:
         with:
           name: failure_logs
           path: ./src/failed_tests.log
+      - uses: actions/upload-artifact@v3
+        with:
+          name: accessibility_rep
+          path: ./src/main.json
   # lighthouse:
   #   runs-on: ubuntu-latest
   #   steps:
