@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import LiveServerTestCase
+from django.forms.fields import math
 from django.test.testcases import call_command, connections
 import requests
 import json
@@ -113,18 +114,19 @@ class AccessibilityTests(LiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def tests_accessibility_issues(self)::
+    def tests_accessibility_issues(self):
         prepare_site_map(self.live_server_url)
-        size = len(site_map)//20
-        threads = ThreadPoolExecutor(size)
+        threads = ThreadPoolExecutor(len(site_map)//100)
+        print(len(site_map))
         i = 1
         lst = []
         tasks = []
         for url in site_map:
             lst.append(url)
-            if i % 20 == 0:
+            if i % 100 == 0:
                 tasks.append(threads.submit(run_lighthouse, lst))
                 lst = []
+                print(lst)
                 lst.append(url)
             i += 1
 
@@ -140,7 +142,7 @@ class AccessibilityTests(LiveServerTestCase):
                 self.assertTrue(False, msg='Error in rendering documentation')
             else:
                 print(data)
-
+        
         print(main_data)
         if main_data:
             with open('output.json', 'w') as f:
