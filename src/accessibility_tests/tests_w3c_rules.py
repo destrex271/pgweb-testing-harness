@@ -9,7 +9,7 @@ from selenium import webdriver
 from .extra_utils.util_functions import varnish_cache
 from bs4 import BeautifulSoup
 
-from axe_selenium_python.axe import Axe
+import os
 
 
 # Fix for CASCADE TRUNCATE FK error
@@ -63,23 +63,12 @@ def prepare_site_map(base):
                 if lk:
                     if not lk.startswith('http') and (lk.startswith('/') or lk.startswith("#")):
                         lk = base + lk
-                    print(lk, site_map)
+                    # print(lk, site_map)
                     if lk not in site_map and lk.__contains__('localhost'):
-                        print("Adding")
+                        # print("Adding")
                         site_map.append(lk)
                         urls.append(lk)
         del urls[0]
-
-
-def find_all(a_str, sub):
-        start = 0
-        while True:
-            start = a_str.find(sub, start)
-            if start == -1:
-                return
-            yield start
-            start += len(sub)
-
 
 
 class AccessibilityTests(LiveServerTestCase):
@@ -109,10 +98,10 @@ class AccessibilityTests(LiveServerTestCase):
 
     def tests_accessibility_issues(self):
         prepare_site_map(self.live_server_url)
-        print(site_map)
-        for url in site_map:
-            self.selenium.get(url)
-            axe = Axe(self.selenium)
-            axe.inject()
-            results = axe.run()
-            print(results["violations"])
+        os.system(f'''lighthouse {self.live_server_url} --only-categories accessibility --chrome-flags="--no-sandbox --headless --disable-gpu" --output json --output-path ./report.json''')
+        # os.system('''pa11y-ci --sitemap https://pa11y.org/sitemap.xml -c ./pgweb/conf''')
+        # os.system(f'''lightcrawler --url {self.live_server_url} --config ./pgweb/conf.json --chrome-flags="--no-sandbox --headless --disable-gpu --output=html --output-path ./a.html"''')
+        # os.system("ls")
+        print("----------------------------------")
+        # os.system("ls pgweb")
+        # os.system("cat ./a.json")

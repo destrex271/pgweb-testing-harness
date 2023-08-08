@@ -12,7 +12,17 @@ cd pgweb
 # Build System dependencies
 sudo apt update && sudo apt-get install -y postgresql-client python3-pip firefox libnss3 libtidy-dev
 
+# Install chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
+# sudo apt install -y chromium-browser
+
 pg_isready --host=localhost
+
+# Install lighthouse
+npm i -g pa11y-ci
+npm i -g lighthouse
+npm i -g lightcrawler
 
 # Python dependencies
 pip install -r requirements.txt
