@@ -44,7 +44,7 @@ jobs:
         env:
           USERNAME: ${{secrets.USERNAME}}
           PASSWORD: ${{secrets.PASSWORD}}
-        run: python send_email.py
+        run: python ./src/workflow_utils/send_email.py
 
 
 # send_mail:
