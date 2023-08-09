@@ -39,7 +39,11 @@ jobs:
         with:
           name: failure_logs
           path: ./src/failed_tests.log
-
+      - name: Send notification email
+        env:
+          USERNAME: ${{secrets.USERNAME}}
+          PASSWORD: ${{secrets.PASSWORD}}
+        run: python ./src/workflow_utils/send_mail.py
 
 
 # send_mail:
