@@ -1,9 +1,10 @@
 from django.contrib.staticfiles.testing import LiveServerTestCase
-from django.forms.fields import math
+from django.forms.fields import math, re
 from django.test.testcases import call_command, connections
 import requests
 import json
 import concurrent.futures
+import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
@@ -48,13 +49,30 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 site_map = []
 
 
+def translate_sitemap(base):
+    global site_map
+    if base.endswith('/'):
+        base = base[0:-1]
+    base += "/sitemap.xml"
+    res = requests.get(base)
+    if res.status_code == 200:
+        root = ET.fromstring(res.content)
+        urls = []
+        for loc in root.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc'):
+            urls.append(loc.text)
+        site_map = urls
+
+
 def prepare_site_map(base):
     if base.endswith('/'):
         base = base[0:-1]
     urls = [base]
+    pattern = r'docs/\d+'
     site_map.append(base)
     while len(urls) > 0:
         url = urls[0]
+        if re.search(pattern, url):
+            continue
         res = None
         try:
             res = requests.get(url)
@@ -65,6 +83,8 @@ def prepare_site_map(base):
             for lnk in soup.find_all('a'):
                 lk = lnk.get('href')
                 if lk:
+                    if re.search(pattern, lk):
+                        continue
                     if not lk.startswith('http') and (lk.startswith('/') or lk.startswith("#")):
                         lk = base + lk
                     # print(lk, site_map)
@@ -115,34 +135,37 @@ class AccessibilityTests(LiveServerTestCase):
         super().tearDownClass()
 
     def tests_accessibility_issues(self):
-        prepare_site_map(self.live_server_url)
-        threads = ThreadPoolExecutor(len(site_map)//100)
+        # prepare_site_map(self.live_server_url)
+        translate_sitemap(self.live_server_url)
+        # threads = ThreadPoolExecutor(len(site_map)//10)
         print(len(site_map))
-        i = 1
-        lst = []
-        tasks = []
-        for url in site_map:
-            lst.append(url)
-            if i % 100 == 0:
-                tasks.append(threads.submit(run_lighthouse, lst))
-                lst = []
-                print(lst)
-                lst.append(url)
-            i += 1
-
-        main_data = {}
-        ftasks = concurrent.futures.as_completed(tasks)
-        for ftask in ftasks:
-            try:
-                data = ftask.result()
-                print(data)
-                main_data.update(data)
-            except Exception as ex:
-                print(ex)
-                self.assertTrue(False, msg='Error in rendering documentation')
-            else:
-                print(data)
-        
+        # i = 1
+        # lst = []
+        # tasks = []
+        main_data = run_lighthouse(site_map)
+        # for url in site_map:
+        #     lst.append(url)
+        #     if i == 10:
+        #         break
+        #     if i % 10 == 0:
+        #         tasks.append(threads.submit(run_lighthouse, lst))
+        #         lst = []
+        #         print(lst)
+        #         lst.append(url)
+        #     i += 1
+        #
+        # main_data = {}
+        # ftasks = concurrent.futures.as_completed(tasks)
+        # for ftask in ftasks:
+        #     try:
+        #         data = ftask.result()
+        #         print(data)
+        #         main_data.update(data)
+        #     except Exception as ex:
+        #         print(ex)
+        #         self.assertTrue(False, msg='Error in rendering documentation')
+        #     else:
+        #         print(data)
         print(main_data)
         if main_data:
             with open('output.json', 'w') as f:
