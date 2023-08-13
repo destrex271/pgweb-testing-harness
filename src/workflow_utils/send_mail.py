@@ -6,6 +6,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import json
 
+# Check if files need to be sent
+with open('./src/failed_tests.log', 'r') as f:
+    if f.read().lower().__contains__('no tests failed'):
+        import sys
+        print("Tests succeded, no email required!")
+        sys.exit(0)
+
 port = 465
 smtp_server = "smtp.gmail.com"
 

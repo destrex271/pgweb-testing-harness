@@ -108,6 +108,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.vers_list = []
         download_map = setup_documentation()
         cls.dld = download_map
+        print("LOADED: ", download_map)
         for version, _ in download_map.items():
             cls.vers_list.append(version)
 

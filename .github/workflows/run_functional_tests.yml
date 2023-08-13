@@ -27,57 +27,20 @@ jobs:
         run: cd src/workflow_utils && chmod +x setup.sh && ./setup.sh
       - name: check_val
         run: ls src/ && ls ../
-      - uses: actions/upload-artifact@v3
-        with:
-          name: test-log
-          path: ./src/final_report.log
-      - uses: actions/upload-artifact@v3
-        with:
-          name: broken-links
-          path: ./src/broken_urls.log
-      - uses: actions/upload-artifact@v3
-        with:
-          name: failure_logs
-          path: ./src/failed_tests.log
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test-log
+      #     path: ./src/final_report.log
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: broken-links
+      #     path: ./src/broken_urls.log
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: failure_logs
+      #     path: ./src/failed_tests.log
       - name: Send notification email
         env:
           USERNAME: ${{secrets.USERNAME}}
           PASSWORD: ${{secrets.PASSWORD}}
         run: python ./src/workflow_utils/send_mail.py
-
-
-# send_mail:
-#   needs: run-tests
-#   runs-on: ubuntu-20.04
-#   steps:
-#     - uses: xSAVIKx/artifact-exists-action@v0
-#       id: chek
-#       with: 
-#         name: 'broken-links'
-#     - name: Download Artifact
-#       uses: actions/download-artifact@v3
-#       with:
-#         name: broken-links
-#     - name: Send mail
-#       if: steps.chek.exists == true
-#       uses: dawidd6/action-send-mail@v3
-#       with:
-#         connection_url: ${{secrets.MAIL_CONNECTION}}
-#         server_address: smtp.gmail.com
-#         server_port: 465
-#         secure: true
-#         username: ${{secrets.MAIL_USERNAME}}
-#         password: ${{secrets.MAIL_PASSWORD}}
-#         subject: Github Actions job result
-#         to: obiwan@example.com,yoda@example.com
-#         from: pgweb-testing-harness@gmail.com # <user@example.com>
-#         body: Build job of ${{github.repository}} completed successfully!
-#         html_body: file://README.html
-#         cc: kyloren@example.com,leia@example.com
-#         bcc: r2d2@example.com,hansolo@example.com
-#         reply_to: luke@example.com
-#         in_reply_to: <random-luke@example.com>
-#         ignore_cert: true
-#         convert_markdown: true
-#         attachments: 
-#         priority: low
