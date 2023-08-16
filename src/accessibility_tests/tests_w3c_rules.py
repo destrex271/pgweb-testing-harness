@@ -163,6 +163,7 @@ class AccessibilityTests(LiveServerTestCase):
         main_data = {}
         ftasks = concurrent.futures.as_completed(tasks)
         for ftask in ftasks:
+            print(ftask)
             try:
                 data = ftask.result()
                 print(data)
