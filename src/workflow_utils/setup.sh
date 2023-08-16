@@ -20,9 +20,7 @@ sudo apt install -y ./google-chrome-stable_current_amd64.deb
 pg_isready --host=localhost
 
 # Install lighthouse
-npm i -g pa11y-ci
 npm i -g lighthouse
-npm i -g lightcrawler
 
 # Python dependencies
 pip install -r requirements.txt
@@ -70,6 +68,7 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 
 # yes | ./pgweb/load_initial_data.sh
 # ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+# ./manage.py test --pattern="tests_re*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 ./manage.py test --pattern="tests_w*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 python ../../utils/process_logs.py
 cat ../../final_report.log

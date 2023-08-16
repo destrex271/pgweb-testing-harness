@@ -54,13 +54,17 @@ def translate_sitemap(base):
     if base.endswith('/'):
         base = base[0:-1]
     base += "/sitemap.xml"
+    print(base)
+    # base = "https://www.postgresql.org/sitemap.xml"
     res = requests.get(base)
+    print(res)
     if res.status_code == 200:
         root = ET.fromstring(res.content)
         urls = []
         for loc in root.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc'):
             urls.append(loc.text)
         site_map = urls
+    print(site_map)
 
 
 def prepare_site_map(base):
@@ -111,8 +115,8 @@ def run_lighthouse(url_lst):
 
 class AccessibilityTests(LiveServerTestCase):
 
-    fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
-                'pgweb/fixtures/organisations.json', 'pgweb/core/fixtures/data.json', 'pgweb/fixtures/lang_fixtures.json', 'pgweb/fixtures/approved_events.json']
+    # fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
+    #             'pgweb/fixtures/organisations.json', 'pgweb/core/fixtures/data.json', 'pgweb/fixtures/lang_fixtures.json', 'pgweb/fixtures/approved_events.json']
 
     @classmethod
     def setUpClass(cls):
@@ -135,15 +139,18 @@ class AccessibilityTests(LiveServerTestCase):
         super().tearDownClass()
 
     def tests_accessibility_issues(self):
-        # prepare_site_map(self.live_server_url)
-        translate_sitemap(self.live_server_url)
+        prepare_site_map(self.live_server_url)
+        # translate_sitemap(self.live_server_url)
+        self.assertLess(len(site_map), 0)
         # threads = ThreadPoolExecutor(len(site_map)//10)
-        print(len(site_map))
+        # print(len(site_map))
+        # self.assertTrue(len(site_map) > 0, msg="Unable to Translate Sitemap; Please check the website sitemap")
         # i = 1
         # lst = []
         # tasks = []
-        main_data = run_lighthouse(site_map)
+        # # main_data = run_lighthouse(site_map)
         # for url in site_map:
+        #     print(i)
         #     lst.append(url)
         #     if i == 10:
         #         break
@@ -153,7 +160,7 @@ class AccessibilityTests(LiveServerTestCase):
         #         print(lst)
         #         lst.append(url)
         #     i += 1
-        #
+        # #
         # main_data = {}
         # ftasks = concurrent.futures.as_completed(tasks)
         # for ftask in ftasks:
@@ -166,7 +173,7 @@ class AccessibilityTests(LiveServerTestCase):
         #         self.assertTrue(False, msg='Error in rendering documentation')
         #     else:
         #         print(data)
-        print(main_data)
-        if main_data:
-            with open('output.json', 'w') as f:
-                json.dump(main_data, f)
+        # print(main_data)
+        # if main_data:
+        #     with open('output.json', 'w') as f:
+        #         json.dump(main_data, f)

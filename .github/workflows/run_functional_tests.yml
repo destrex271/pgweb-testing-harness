@@ -2,6 +2,7 @@
   push:
     branches:
       - main
+      - feature/accessibility_tests
   workflow_dispatch: null
 jobs:
   run-tests:
@@ -27,20 +28,20 @@ jobs:
         run: cd src/workflow_utils && chmod +x setup.sh && ./setup.sh
       - name: check_val
         run: ls src/ && ls ../
-      - uses: actions/upload-artifact@v3
-        with:
-          name: test-log
-          path: ./src/final_report.log
-      - uses: actions/upload-artifact@v3
-        with:
-          name: broken-links
-          path: ./src/broken_urls.log
-      - uses: actions/upload-artifact@v3
-        with:
-          name: failure_logs
-          path: ./src/failed_tests.log
-      - uses: actions/upload-artifact@v3
-        with:
-          name: accessibility_rep
-          path: ./src/main.json
-
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: test-log
+      #     path: ./src/final_report.log
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: broken-links
+      #     path: ./src/broken_urls.log
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: failure_logs
+      #     path: ./src/failed_tests.log
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: accessibility_rep
+      #     path: ./src/main.json
+      #
