@@ -139,8 +139,8 @@ class AccessibilityTests(LiveServerTestCase):
         super().tearDownClass()
 
     def tests_accessibility_issues(self):
-        prepare_site_map(self.live_server_url)
-        # translate_sitemap(self.live_server_url)
+        # prepare_site_map(self.live_server_url)
+        translate_sitemap(self.live_server_url)
         self.assertLess(len(site_map), 0)
         # threads = ThreadPoolExecutor(len(site_map)//10)
         # print(len(site_map))
