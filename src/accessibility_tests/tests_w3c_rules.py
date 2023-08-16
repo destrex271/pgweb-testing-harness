@@ -140,7 +140,7 @@ class AccessibilityTests(LiveServerTestCase):
     def tests_accessibility_issues(self):
         # prepare_site_map(self.live_server_url)
         translate_sitemap(self.live_server_url)
-        self.assertLess(len(site_map), 0)
+        # self.assertLess(len(site_map), 0)
         threads = ThreadPoolExecutor(len(site_map)//10)
         print(len(site_map))
         self.assertTrue(len(site_map) > 0, msg="Unable to Translate Sitemap; Please check the website sitemap")
