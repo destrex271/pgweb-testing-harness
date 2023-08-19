@@ -20,7 +20,9 @@ sudo apt install -y ./google-chrome-stable_current_amd64.deb
 pg_isready --host=localhost
 
 # Install lighthouse
-npm i -g lighthouse
+# npm i -g lighthouse
+npm i -g yarn
+yarn global add @unlighthouse/cli puppeteer
 
 # Python dependencies
 pip install -r requirements.txt
@@ -73,6 +75,9 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 python ../../utils/process_logs.py
 cat ../../final_report.log
 cat ../../failed_tests.log
+ls
+ls ..
+ls ../../
 # cat ../../broken_urls.log
 
 

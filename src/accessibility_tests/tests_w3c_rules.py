@@ -140,40 +140,41 @@ class AccessibilityTests(LiveServerTestCase):
         super().tearDownClass()
 
     def tests_accessibility_issues(self):
-        # prepare_site_map(self.live_server_url)
-        translate_sitemap(self.live_server_url)
-        # self.assertLess(len(site_map), 0)
-        threads = ThreadPoolExecutor(len(site_map)//10)
-        print(len(site_map))
-        self.assertTrue(len(site_map) > 0, msg="Unable to Translate Sitemap; Please check the website sitemap")
-        i = 1
-        lst = []
-        tasks = []
-        # main_data = run_lighthouse(site_map)
-        for url in site_map:
-            print(i)
-            if i % 10 != 0:
-                lst.append(url)
-            else:
-                tasks.append(threads.submit(run_lighthouse, lst))
-                lst = []
-                print(lst)
-                lst.append(url)
-            i += 1
-        ftasks = concurrent.futures.as_completed(tasks)
-        for ftask in ftasks:
-            print(ftask)
-            try:
-                data = ftask.result()
-                # print(data)
-                # main_data.update(data)
-            except Exception as ex:
-                print(ex)
-                self.assertTrue(False, msg='Error in rendering documentation')
-            else:
-                print(data)
-        print(os.system('ls ../'))
-        print(os.system('ls'))
+        os.system(f"unlighthouse-ci --site {self.live_server_url} --debug --build-static --output-path .")
+        # # prepare_site_map(self.live_server_url)
+        # translate_sitemap(self.live_server_url)
+        # # self.assertLess(len(site_map), 0)
+        # threads = ThreadPoolExecutor(len(site_map)//10)
+        # print(len(site_map))
+        # self.assertTrue(len(site_map) > 0, msg="Unable to Translate Sitemap; Please check the website sitemap")
+        # i = 1
+        # lst = []
+        # tasks = []
+        # # main_data = run_lighthouse(site_map)
+        # for url in site_map:
+        #     print(i)
+        #     if i % 10 != 0:
+        #         lst.append(url)
+        #     else:
+        #         tasks.append(threads.submit(run_lighthouse, lst))
+        #         lst = []
+        #         print(lst)
+        #         lst.append(url)
+        #     i += 1
+        # ftasks = concurrent.futures.as_completed(tasks)
+        # for ftask in ftasks:
+        #     print(ftask)
+        #     try:
+        #         data = ftask.result()
+        #         # print(data)
+        #         # main_data.update(data)
+        #     except Exception as ex:
+        #         print(ex)
+        #         self.assertTrue(False, msg='Error in rendering documentation')
+        #     else:
+        #         print(data)
+        # print(os.system('ls ../'))
+        # print(os.system('ls'))
         # print(main_data)
         # if main_data:
         #     with open('output.json', 'w') as f:
