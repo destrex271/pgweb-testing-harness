@@ -8,6 +8,7 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 # Clone PGWeb repository
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
+ls
 
 sudo apt update && sudo apt-get install -y postgresql-client python3-pip firefox libnss3 libtidy-dev
 # Install chrome
@@ -51,3 +52,6 @@ export DJANGO_SETTINGS_MODULE=pgweb.settings
 sudo chmod +x pgweb/load_initial_data.sh
 yes | ./pgweb/load_initial_data.sh
 echo "Loaded data"
+
+python manage.py runserver & 
+unlighthouse-ci --site http://localhost:8000/ --debug --build-static
