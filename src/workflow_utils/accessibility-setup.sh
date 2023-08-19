@@ -52,5 +52,3 @@ sudo chmod +x pgweb/load_initial_data.sh
 yes | ./pgweb/load_initial_data.sh
 echo "Loaded data"
 
-python manage.py runserver & unlighthouse --site http://localhost:8000/
-

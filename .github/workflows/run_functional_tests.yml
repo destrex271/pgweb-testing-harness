@@ -22,34 +22,36 @@ jobs:
         options: >-
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      # - uses: tecolicom/actions-use-apt-tools@v1
-      #   with:
-      #     tools: ''
-      #     cache: yes
-      # - uses: actions/setup-python@v2
-      #   with:
-      #     python-version: '3.9'
-      #     cache: 'pip'
       - name: Checkout Current Repository
         uses: actions/checkout@v3
       - name: Clone and shift tests
         run: cd src/workflow_utils && chmod +x setup.sh && ./setup.sh
       - name: check_val
         run: ls src/ && ls ../
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: test-log
-      #     path: ./src/final_report.log
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: broken-links
-      #     path: ./src/broken_urls.log
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: failure_logs
-      #     path: ./src/failed_tests.log
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: accessibility_rep
-      #     path: ./src/main.json
-      #
+  run-acc-tests:
+      runs-on: ubuntu-20.04
+      strategy:
+        matrix:
+          pg_version:
+            - 15
+      services:
+        postgres:
+          image: 'postgres:${{ matrix.pg_version }}'
+          env:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+          ports:
+            - '5432:5432'
+          options: >-
+            --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      steps:
+        - name: Checkout Current Repository
+          uses: actions/checkout@v3
+        - name: Clone and shift tests
+          run: cd src/workflow_utils && chmod +x accessibility-setup.sh && ./accessibility-setup.sh
+        - name: check_val
+          run: ls src/ && ls ../
+        - name: start_backend
+          run: python manage.py runserver
+        - name: run_lighhouse
+          run: unlighthouse-ci --site http://localhost:8000/ --debug --build-static
