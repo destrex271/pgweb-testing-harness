@@ -51,11 +51,11 @@ site_map = []
 
 def translate_sitemap(base):
     global site_map
-    if base.endswith('/'):
-        base = base[0:-1]
-    base += "/sitemap.xml"
-    print(base)
-    # base = "https://www.postgresql.org/sitemap.xml"
+    # if base.endswith('/'):
+    #     base = base[0:-1]
+    # base += "/sitemap.xml"
+    # print(base)
+    base = "https://www.postgresql.org/sitemap.xml"
     res = requests.get(base)
     print(res)
     if res.status_code == 200:
@@ -66,42 +66,42 @@ def translate_sitemap(base):
         site_map = urls
 
 
-def prepare_site_map(base):
-    if base.endswith('/'):
-        base = base[0:-1]
-    urls = [base]
-    pattern = r'docs/\d+'
-    site_map.append(base)
-    while len(urls) > 0:
-        url = urls[0]
-        if re.search(pattern, url):
-            continue
-        res = None
-        try:
-            res = requests.get(url)
-        except requests.exceptions.ConnectionError:
-            continue
-        if res:
-            soup = BeautifulSoup(res.content, "html.parser")
-            for lnk in soup.find_all('a'):
-                lk = lnk.get('href')
-                if lk:
-                    if re.search(pattern, lk):
-                        continue
-                    if not lk.startswith('http') and (lk.startswith('/') or lk.startswith("#")):
-                        lk = base + lk
-                    # print(lk, site_map)
-                    if lk not in site_map and lk.__contains__('localhost'):
-                        # print("Adding")
-                        site_map.append(lk)
-                        urls.append(lk)
-        del urls[0]
-
+# def prepare_site_map(base):
+#     if base.endswith('/'):
+#         base = base[0:-1]
+#     urls = [base]
+#     pattern = r'docs/\d+'
+#     site_map.append(base)
+#     while len(urls) > 0:
+#         url = urls[0]
+#         if re.search(pattern, url):
+#             continue
+#         res = None
+#         try:
+#             res = requests.get(url)
+#         except requests.exceptions.ConnectionError:
+#             continue
+#         if res:
+#             soup = BeautifulSoup(res.content, "html.parser")
+#             for lnk in soup.find_all('a'):
+#                 lk = lnk.get('href')
+#                 if lk:
+#                     if re.search(pattern, lk):
+#                         continue
+#                     if not lk.startswith('http') and (lk.startswith('/') or lk.startswith("#")):
+#                         lk = base + lk
+#                     # print(lk, site_map)
+#                     if lk not in site_map and lk.__contains__('localhost'):
+#                         # print("Adding")
+#                         site_map.append(lk)
+#                         urls.append(lk)
+#         del urls[0]
+#
 
 def run_lighthouse(url_lst):
     main_data = {}
     for url in url_lst:
-            os.system(f'lighthouse --chrome-flags="--no-sandbox --headless --disable-gpu" --only-categories accessibility --disable-storage-reset="true" --output=json --output-path ./report.json {url}')
+            os.system(f'lighthouse --chrome-flags="--no-sandbox --headless --disable-gpu" --only-categories accessibility --disable-storage-reset="true" --output=html {url}')
             with open('./report.json', 'r') as f:
                 js_data = json.loads(f.read())
                 print(js_data)
@@ -166,14 +166,15 @@ class AccessibilityTests(LiveServerTestCase):
             print(ftask)
             try:
                 data = ftask.result()
-                print(data)
-                main_data.update(data)
+                # print(data)
+                # main_data.update(data)
             except Exception as ex:
                 print(ex)
                 self.assertTrue(False, msg='Error in rendering documentation')
             else:
                 print(data)
-        print(main_data)
+        print(os.system('ls'))
+        # print(main_data)
         if main_data:
             with open('output.json', 'w') as f:
                 json.dump(main_data, f)
