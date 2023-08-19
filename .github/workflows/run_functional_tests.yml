@@ -52,6 +52,6 @@ jobs:
         - name: check_val
           run: ls src/ && ls ../
         - name: start_backend
-          run: cd pgweb/ && python manage.py runserver
+          run: cd pgweb/ && python manage.py runserver &
         - name: run_lighhouse
           run: unlighthouse-ci --site http://localhost:8000/ --debug --build-static
