@@ -9,9 +9,7 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
-# Build System dependencies
 sudo apt update && sudo apt-get install -y postgresql-client python3-pip firefox libnss3 libtidy-dev
-
 # Install chrome
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt install -y ./google-chrome-stable_current_amd64.deb
@@ -26,8 +24,6 @@ yarn global add @unlighthouse/cli puppeteer
 
 # Python dependencies
 pip install -r requirements.txt
-pip install -r ../../../requirements.txt
-
 
 # Create Database & add procedures
 PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE db;"
@@ -39,20 +35,10 @@ echo -e $conf >>pgweb/settings_local.py
 echo -e $database >>pgweb/settings_local.py
 cat pgweb/settings_local.py
 
-
-for entry in ../../functional_tests/*; do
+for entry in ../../accessibility_tests/*; do
     echo "$entry"
     cp -r "$entry" pgweb/
 done
-
-# for entry in ../../accessibility_tests/*; do
-#     echo "$entry"
-#     cp -r "$entry" pgweb/
-# done
-
-cp -r ../../utils pgweb/
-
-ls pgweb
 
 # Run all the tests
 export DJANGO_SETTINGS_MODULE=pgweb.settings
@@ -61,25 +47,10 @@ export DJANGO_SETTINGS_MODULE=pgweb.settings
 ./manage.py makemigrations
 ./manage.py migrate
 
-# Load version fixtures
-PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # Scripts to load initial data
-# sudo chmod +x pgweb/load_initial_data.sh
-# yes | ./pgweb/load_initial_data.sh
-# echo "Loaded data"
+sudo chmod +x pgweb/load_initial_data.sh
+yes | ./pgweb/load_initial_data.sh
+echo "Loaded data"
 
-# yes | ./pgweb/load_initial_data.sh
-# ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-# ./manage.py test --pattern="tests_re*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-./manage.py test --pattern="tests_w*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-python ../../utils/process_logs.py
-cat ../../final_report.log
-cat ../../failed_tests.log
-ls
-ls ..
-ls ../../
-# cat ../../broken_urls.log
+python manage.py runserver & unlighthouse --site http://localhost:8000/
 
-
-
-PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE db;"
