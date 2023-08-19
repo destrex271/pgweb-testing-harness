@@ -51,11 +51,11 @@ site_map = []
 
 def translate_sitemap(base):
     global site_map
-    # if base.endswith('/'):
-    #     base = base[0:-1]
-    # base += "/sitemap.xml"
-    # print(base)
-    base = "https://www.postgresql.org/sitemap.xml"
+    if base.endswith('/'):
+        base = base[0:-1]
+    base += "/sitemap.xml"
+    print(base)
+    # base = "https://www.postgresql.org/sitemap.xml"
     res = requests.get(base)
     print(res)
     if res.status_code == 200:
