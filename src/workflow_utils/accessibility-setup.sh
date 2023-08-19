@@ -57,4 +57,5 @@ python manage.py runserver 0.0.0.0:8000 &
 unlighthouse-ci --site http://0.0.0.0:8000/ --reporter csvExpanded
 
 ls .unlighthouse
-ls ~/.unlighthouse
+mkdir acc_reports
+mv .unlighthouse ../../acc_reports
