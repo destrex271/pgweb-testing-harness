@@ -2,7 +2,6 @@
   push:
     branches:
       - main
-      - feature/accessibility_tests
   workflow_dispatch: null
 jobs:
   run-tests:
@@ -28,6 +27,24 @@ jobs:
         run: cd src/workflow_utils && chmod +x setup.sh && ./setup.sh
       - name: check_val
         run: ls src/ && ls ../
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-log
+          path: ./src/final_report.log
+      - uses: actions/upload-artifact@v3
+        with:
+          name: broken-links
+          path: ./src/broken_urls.log
+      - uses: actions/upload-artifact@v3
+        with:
+          name: failure_logs
+          path: ./src/failed_tests.log
+      - name: Send notification email
+        env:
+          USERNAME: ${{secrets.USERNAME}}
+          PASSWORD: ${{secrets.PASSWORD}}
+        run: python ./src/workflow_utils/send_mail.py
+
   run-acc-tests:
       runs-on: ubuntu-20.04
       strategy:
@@ -56,3 +73,4 @@ jobs:
             name: accessibility-tests
             path: |
               ./src/acc_reports/
+      

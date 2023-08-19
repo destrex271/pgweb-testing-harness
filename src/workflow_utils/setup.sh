@@ -45,11 +45,6 @@ for entry in ../../functional_tests/*; do
     cp -r "$entry" pgweb/
 done
 
-# for entry in ../../accessibility_tests/*; do
-#     echo "$entry"
-#     cp -r "$entry" pgweb/
-# done
-
 cp -r ../../utils pgweb/
 
 ls pgweb
@@ -71,15 +66,10 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # yes | ./pgweb/load_initial_data.sh
 # ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 # ./manage.py test --pattern="tests_re*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-./manage.py test --pattern="tests_w*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+
 python ../../utils/process_logs.py
 cat ../../final_report.log
 cat ../../failed_tests.log
-ls
-ls ..
-ls ../../
-# cat ../../broken_urls.log
-
-
 
 PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE db;"
