@@ -140,6 +140,8 @@ class AccessibilityTests(LiveServerTestCase):
         super().tearDownClass()
 
     def tests_accessibility_issues(self):
+        self.selenium.get(self.live_server_url)
+        print(self.selenium.find_elements(By.TAG_NAME, 'h1'))
         os.system(f"unlighthouse-ci --site {self.live_server_url} --debug --build-static --output-path .")
         # # prepare_site_map(self.live_server_url)
         # translate_sitemap(self.live_server_url)
