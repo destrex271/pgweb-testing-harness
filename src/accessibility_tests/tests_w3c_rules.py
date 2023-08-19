@@ -48,8 +48,8 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 
 class AccessibilityTests(LiveServerTestCase):
 
-    # fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
-    #             'pgweb/fixtures/organisations.json', 'pgweb/core/fixtures/data.json', 'pgweb/fixtures/lang_fixtures.json', 'pgweb/fixtures/approved_events.json']
+    fixtures = ['pgweb/fixtures/users.json', 'pgweb/fixtures/org_types.json',
+                'pgweb/fixtures/organisations.json', 'pgweb/core/fixtures/data.json', 'pgweb/fixtures/lang_fixtures.json', 'pgweb/fixtures/approved_events.json']
 
     @classmethod
     def setUpClass(cls):
@@ -74,7 +74,7 @@ class AccessibilityTests(LiveServerTestCase):
     def tests_accessibility_issues(self):
         self.selenium.get(self.live_server_url)
         print(self.selenium.find_elements(By.TAG_NAME, 'h1'))
-        os.system(f"unlighthouse-ci --site {self.live_server_url} --debug --build-static --output-path .")
+        os.system(f"unlighthouse-ci --site {self.live_server_url}/ --debug --build-static --output-path .")
         # # prepare_site_map(self.live_server_url)
         # translate_sitemap(self.live_server_url)
         # # self.assertLess(len(site_map), 0)
