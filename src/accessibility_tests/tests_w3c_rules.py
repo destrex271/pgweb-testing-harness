@@ -99,6 +99,7 @@ def translate_sitemap(base):
 #
 
 def run_lighthouse(url_lst):
+    print("Testing: ", url_lst)
     main_data = {}
     for url in url_lst:
             os.system(f'lighthouse --chrome-flags="--no-sandbox --headless --disable-gpu" --only-categories accessibility --disable-storage-reset="true" --output=html {url}')
@@ -138,22 +139,20 @@ class AccessibilityTests(LiveServerTestCase):
         super().tearDownClass()
 
     def tests_accessibility_issues(self):
-        # prepare_site_map(self.live_server_url)
         translate_sitemap(self.live_server_url)
-        # self.assertLess(len(site_map), 0)
         threads = ThreadPoolExecutor(len(site_map)//10)
         print(len(site_map))
         self.assertTrue(len(site_map) > 0, msg="Unable to Translate Sitemap; Please check the website sitemap")
         i = 1
         lst = []
         tasks = []
-        # main_data = run_lighthouse(site_map)
         for url in site_map:
             print(i)
-            lst.append(url)
-            if i == 10:
+            if i == 11:
                 break
-            if i % 10 == 0:
+            if i % 10 != 0:
+                lst.append(url)
+            else:
                 tasks.append(threads.submit(run_lighthouse, lst))
                 lst = []
                 print(lst)
