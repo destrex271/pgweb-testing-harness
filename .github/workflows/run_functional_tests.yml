@@ -40,7 +40,7 @@ jobs:
         with:
           name: failure_logs
           path: ./src/failed_tests.log
-      - uses: destrex271/palm-log-analysis-action@v1
+      - uses: destrex271/palm-log-analysis-action@v1.1
         with:
           api-key: ${{ secrets.API_KEY }}
           file_path: ./src/final_report.log
