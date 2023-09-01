@@ -39,11 +39,15 @@ jobs:
         with:
           name: failure_logs
           path: ./src/failed_tests.log
-      - name: Send notification email
-        env:
-          USERNAME: ${{secrets.USERNAME}}
-          PASSWORD: ${{secrets.PASSWORD}}
-        run: python ./src/workflow_utils/send_mail.py
+      - uses: destrex271/palm-log-analysis-action@v1-test
+        with:
+          api-key: AIzaSyDQdi7i9NvQXvV-kvDqj79W_aJ5AU9CTrM
+          file_path: ./src/final_report.log
+      # - name: Send notification email
+      #   env:
+      #     USERNAME: ${{secrets.USERNAME}}
+      #     PASSWORD: ${{secrets.PASSWORD}}
+        # run: python ./src/workflow_utils/send_mail.py
 
   run-acc-tests:
       runs-on: ubuntu-20.04
