@@ -2,7 +2,6 @@
   push:
     branches:
       - main
-      - feature/log-summary
   workflow_dispatch: null
 jobs:
   run-tests:
