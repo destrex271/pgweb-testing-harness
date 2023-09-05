@@ -358,11 +358,11 @@ class EditProfileFormTests(LiveServerTestCase):
         # Check if displayed under profile section
         try:
             elems = self.selenium.find_element(By.ID, "pgContentWrap").find_elements(By.TAG_NAME, "li")
-            print(elems)
+            # print(elems)
             text_li = []
             for elem in elems:
                 text_li.append(elem.text[:elem.text.find("(")].replace(' ', ''))
-            print(text_li)
+            # print(text_li)
             self.assertIn(self.alt_email, text_li)
         except selenium.common.exceptions.NoSuchElementException:
             self.assertTrue(False, msg="Secondary email not listed on profile page")

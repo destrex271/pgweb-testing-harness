@@ -90,8 +90,8 @@ def segregate_links(addr):
         # print()
         del urls[0]
 
-    print("Internal urls ", len(internal_links))
-    print("External urls ", len(external_links))
+    # print("Internal urls ", len(internal_links))
+    # print("External urls ", len(external_links))
 
 
 class RecusrsiveLinkCrawlTests(LiveServerTestCase):
@@ -145,7 +145,7 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
                 broken_external_links[lnk] = "Not reachable"
 
         if len(broken_external_links) != 0:
-            print("Writing to file!!")
+            # print("Writing to file!!")
             write_to_report(broken_external_links,
                             "Broken External Links", par=True)
         self.assertTrue(len(broken_external_links) ==

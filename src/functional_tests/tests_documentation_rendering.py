@@ -51,7 +51,7 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 
 def check_page(root_url, class_obj, version):
     urls = [root_url]
-    print("Root url -> ", urls[0])
+    # print("Root url -> ", urls[0])
     base = root_url[:root_url.rfind("/")]
 
     broken_links = []
@@ -108,7 +108,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.vers_list = []
         download_map = setup_documentation()
         cls.dld = download_map
-        print("LOADED: ", download_map)
+        # print("LOADED: ", download_map)
         for version, _ in download_map.items():
             cls.vers_list.append(version)
 
@@ -165,7 +165,5 @@ class DocumentationRenderTests(LiveServerTestCase):
             try:
                 data = ftask.result()
             except Exception as ex:
-                print(ex)
+                # print(ex)
                 self.assertTrue(False, msg='Error in rendering documentation')
-            else:
-                print(data)
