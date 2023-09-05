@@ -39,11 +39,11 @@ jobs:
         with:
           name: failure_logs
           path: ./src/failed_tests.log
-      - uses: destrex271/palm-log-analysis-action@v1.1-test
-        with:
-          api-key: ${{ secrets.API_KEY }}
-          file_path: ./src/final_report.log
-          output-file: report
+      # - uses: destrex271/palm-log-analysis-action@v1.1-test
+      #   with:
+      #     api-key: ${{ secrets.API_KEY }}
+      #     file_path: ./src/final_report.log
+      #     output-file: report
       - name: Send notification email
         env:
           USERNAME: ${{secrets.USERNAME}}
