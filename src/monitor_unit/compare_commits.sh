@@ -1,7 +1,7 @@
 function trigger() {
 	REPO_OWNER="destrex271"
 	REPO_NAME="pgweb-testing-harness"
-	WORKFLOW_NAME="run_functional_tests.yml"
+	WORKFLOW_NAME="run_tests.yml"
 	GITHUB_TOKEN="$SECRET_KEY"
 
 	# Trigger the workflow using the GitHub REST API with authentication

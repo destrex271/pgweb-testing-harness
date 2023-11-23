@@ -1,9 +1,11 @@
 Django
 selenium==4.10.0
 webdriver-manager==3.8.6
+python-dotenv
 beautifulsoup4
 wget
 coverage
 pyscopg2
 logtopg
 axe-selenium-python==2.1.6
+supabase
