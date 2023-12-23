@@ -42,7 +42,94 @@ Once these prerequisites have been satisfied you can follow the contribution ins
 If you are adding new tests kindly add them in the following format: **src/[category]/tests_*.py**.
 
 If you want to add any utility functions kindly add them to **src/utils/*.py**
+## contribution guidelines
+Contributing to PGWEB-TESTING-HARNESS
+Thank you for considering contributing to PGWEB-TESTING-HARNESS!
+Whether it's fixing a bug , proposing a new feature , or improving documentation, your contributions are greatly appreciated.
 
+Code of Conduct
+Please make sure to read and follow our Code of Conduct before contributing to the project.
+
+Getting Started
+Fork the repository:
+
+Create a personal copy of the PGWEB-TESTING-HARNESS repository on Github.
+You can do this by clicking the "Fork" button on the PGWEB-TESTING-HARNESS repository page.
+Clone the repository locally:
+
+After forking the repository, clone it locally on your computer so that you can work on the code and make changes.
+git clone https://github.com/<YOUR-USERNAME>/PGWEB-TESTING-HARNESS.git
+Create a new branch:
+
+Before making any changes, create a new branch in your local repository.
+This is done to ensure that your changes are isolated from the main branch and can be easily reviewed and merged later.
+git checkout -b <branch-name>
+Make changes:
+
+Start making changes to the code, fixing bugs, adding new features, etc.
+Push changes to the fork:
+
+Once the changes have been made, push them to your fork on Github.
+git add .
+git commit -m "Description of changes"
+git push origin <branch-name>
+Submitting a Pull Request
+Make sure your changes are well-documented and include relevant tests.
+
+If you've added new functionality, include appropriate documentation.
+
+Follow the coding conventions used in the project.
+
+Before submitting your pull request, make sure the following items have been checked:
+
+All tests pass and the build is successful.
+Your changes do not produce any new warnings or errors.
+Your changes have been thoroughly tested on different platforms and browsers.
+Your changes do not break backward compatibility.
+When you're ready, submit a pull request and include a descriptive title and a detailed description of your changes.
+
+Additional Resources
+Project documentation
+Issue tracker
+Thank you again for your interest in contributing to PGWEB-TESTING-HARNESS.
+
+We look forward to working with you!
+
+## code of conduct
+Code Of Conduct-PGWEB-TESTING-HARNESS
+
+Our Pledge
+In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to make participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
+
+Our Standards
+Examples of behavior that contributes to a positive environment for our community include:
+
+Demonstrating empathy and kindness toward other people
+Being respectful of differing opinions, viewpoints, and experiences
+Giving and gracefully accepting constructive feedback
+Accepting responsibility and apologizing to those affected by our mistakes, and learning from the experience
+Focusing on what is best not just for us as individuals, but for the overall community
+Examples of unacceptable behavior include:
+
+The use of sexualized language or imagery, and sexual attention or advances
+Trolling, insulting or derogatory comments, and personal or political attacks
+Public or private harassment
+Publishing others' private information, such as a physical or email address, without their explicit permission
+Other conduct which could reasonably be considered inappropriate in a professional setting
+Our Responsibilities
+Project maintainers are responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any instances of unacceptable behavior.
+
+Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, or to ban temporarily or permanently any contributor for other behavior that they deem inappropriate, threatening, offensive, or harmful.
+
+Scope
+This Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public spaces. Examples of representing our community include using an official e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event.
+
+Enforcement:
+contact:
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at <>. All complaints will be reviewed and investigated promptly and fairly.
+
+Attribution
+This Code of Conduct is adapted from the Contributor Covenant, version 1.4, available at http://contributor-covenant.org/version/1/4
 **Note**: While working on your local machine you might see certain errors and warnings related to pgweb and some other folders, kindly ignore them as these imports are later required in the CI/CD pipeline.
 
 
