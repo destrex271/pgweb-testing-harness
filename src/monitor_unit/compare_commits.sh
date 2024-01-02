@@ -12,6 +12,8 @@ function trigger() {
 		-d '{"ref":"main"}'
 }
 
+apt update -y && apt upgrade -y
+apt install -y git curl
 git clone git://git.postgresql.org/git/pgweb.git
 
 ls

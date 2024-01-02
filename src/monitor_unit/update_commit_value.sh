@@ -6,11 +6,13 @@ git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
 # Get last commit id
-ls
-id = $(git rev-parse HEAD)
-msg = $(git log -n 1 --pretty=%B "$id")
+id=$(git rev-parse HEAD)
+msg=$(git log -n 1 --pretty=%B "$id")
 git rev-parse HEAD >"../commit_id.txt"
 cat ../commit_id.txt
+echo $id
+echo "Message: $msg" 
+echo $msg
 cd ..
 rm -rf pgweb
 git status
