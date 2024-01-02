@@ -7,6 +7,8 @@ cd pgweb
 
 # Get last commit id
 ls
+id = $(git rev-parse HEAD)
+msg = $(git log -n 1 --pretty=%B "$id")
 git rev-parse HEAD >"../commit_id.txt"
 cat ../commit_id.txt
 cd ..
@@ -18,6 +20,6 @@ git config --global user.name "destrex271"
 git config --global user.email "destrex271@gmail.com"
 
 git add .
-git commit -m "GH Action; Updated commit id"
+git commit -m "Ran tests for: $msg"
 git remote set-url origin https://x-access-token:$SECRET_KEY@github.com/$REPO_OWNER/$REPO_NAME
 git push -u origin main
