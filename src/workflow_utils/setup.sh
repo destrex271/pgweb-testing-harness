@@ -5,28 +5,31 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 
 # ------------------------------
 
+# Build System dependencies
+sudo apt update && sudo apt install git -y 
+sudo apt-get install -y postgresql-client python3-dev python3-pip firefox libnss3 libtidy-dev
+
 # Clone PGWeb repository
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
 
-# Build System dependencies
-sudo apt update && sudo apt-get install -y postgresql-client python3-pip firefox libnss3 libtidy-dev
-
 # Install chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install -y ./google-chrome-stable_current_amd64.deb
+# wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# sudo apt install -y ./google-chrome-stable_current_amd64.deb
 # sudo apt install -y chromium-browser
 
 pg_isready --host=localhost
+which psql
 
 # Install lighthouse
 # npm i -g lighthouse
-npm i -g yarn
-yarn global add @unlighthouse/cli puppeteer
+# npm i -g yarn
+# yarn global add @unlighthouse/cli puppeteer
 
 # Python dependencies
 pip install -r requirements.txt
 pip install -r ../../../requirements.txt
+echo "installed"
 
 
 # Create Database & add procedures
@@ -47,14 +50,14 @@ done
 
 cp -r ../../utils pgweb/
 
-ls pgweb
+# ls pgweb
 
 # Run all the tests
 export DJANGO_SETTINGS_MODULE=pgweb.settings
-
+ls
 # Migrations
-./manage.py makemigrations
-./manage.py migrate
+python3 manage.py makemigrations
+python3 manage.py migrate
 
 # Load version fixtures
 PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
@@ -66,9 +69,9 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # yes | ./pgweb/load_initial_data.sh
 # ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 # ./manage.py test --pattern="tests_re*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+python3 manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 
-python ../../utils/process_logs.py
+python3 ../../utils/process_logs.py
 cat ../../final_report.log
 cat ../../failed_tests.log
 

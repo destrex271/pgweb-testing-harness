@@ -1,11 +1,11 @@
-Django
+Django==3.2
 selenium==4.10.0
 webdriver-manager==3.8.6
 python-dotenv
 beautifulsoup4
 wget
 coverage
-pyscopg2
+pyscopg2==2.8.5
 logtopg
 axe-selenium-python==2.1.6
 supabase
