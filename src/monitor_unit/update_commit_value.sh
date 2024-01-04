@@ -24,4 +24,5 @@ git config --global user.email "destrex271@gmail.com"
 git add .
 git commit -m "Ran tests for: $msg"
 git remote set-url origin https://x-access-token:$SECRET_KEY@github.com/$REPO_OWNER/$REPO_NAME
+git pull
 git push -u origin main
