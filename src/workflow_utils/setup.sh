@@ -1,3 +1,11 @@
+
+function handle_build_fail(){
+    echo "Build Failed!"
+    exec > ../../failed_tests.log 2>&1
+    echo "Errors reported"
+}
+
+#
 # Settings for settings_local.py
 conf='DEBUG=True\nSITE_ROOT="http://localhost:8000"\nSESSION_COOKIE_SECURE=False\nSESSION_COOKIE_DOMAIN=None\nCSRF_COOKIE_SECURE=False\nCSRF_COOKIE_DOMAIN=None\nALLOWED_HOSTS=["*"]\nSTATIC_ROOT = "/var/www/example.com/static/"'
 database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql',\n\t\t'NAME': 'db',\n\t\t'PORT': 5432,\n\t\t'PASSWORD': 'postgres',\n\t\t'HOST' : 'localhost',\n\t\t'USER': 'postgres'\n\t}\n}"
@@ -12,6 +20,8 @@ sudo apt-get install -y postgresql-client python3-dev python3-pip firefox libnss
 # Clone PGWeb repository
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
+git reset 115586cd2f6266619cbe07b446d37ddf3a9d554f
+echo "Cloned Repo"
 
 # Install chrome
 # wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -28,9 +38,21 @@ which psql
 
 # Python dependencies
 pip install -r requirements.txt
-pip install -r ../../../requirements.txt
-echo "installed"
+harness_pip_stat=$?
+echo $harness_pip_stat
+if [ $harness_pip_stat != 0 ]; then
+    echo "Harness failed in installing dependencies"
+    handle_build_fail
+fi
 
+pip install -r ../../../requirements.txt
+pgweb_pip_stat=$?
+if [ $pgweb_pip_stat != 0 ]; then
+    echo "Harness unable to install pgweb dependencies"
+    handle_build_fail
+fi
+
+echo "installed"
 
 # Create Database & add procedures
 PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE db;"
@@ -50,14 +72,24 @@ done
 
 cp -r ../../utils pgweb/
 
-# ls pgweb
-
 # Run all the tests
 export DJANGO_SETTINGS_MODULE=pgweb.settings
 ls
 # Migrations
 python3 manage.py makemigrations
+make_migrate_stat=$?
+
+if [ $make_migrate_stat != 0 ]; then
+    echo "\n\nError in Making migrations"
+    handle_build_fail
+fi
+
 python3 manage.py migrate
+migrate_stat=$?
+if [ $make_migrate_stat != 0 ]; then
+    echo "\n\nError in Making migrations"
+    handle_build_fail
+fi
 
 # Load version fixtures
 PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
