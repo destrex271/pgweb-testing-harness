@@ -20,7 +20,6 @@ sudo apt-get install -y postgresql-client python3-dev python3-pip firefox libnss
 # Clone PGWeb repository
 git clone git://git.postgresql.org/git/pgweb.git
 cd pgweb
-git reset 115586cd2f6266619cbe07b446d37ddf3a9d554f
 echo "Cloned Repo"
 
 # Install chrome
