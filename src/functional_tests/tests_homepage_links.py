@@ -139,8 +139,11 @@ class RecusrsiveLinkCrawlTests(LiveServerTestCase):
             if res is not None:
                 stat = res.status_code
                 if not stat == 200:
-                    broken_external_links[lnk] = [stat, parent_url_dict[lnk][0].replace(
-                        self.live_server_url, 'https://www.postgresql.org'), parent_url_dict[lnk][1]]
+                    if stat == 400 and lnk.__contains__('twitter'):  # Handle twitter 400 which is usually a false alarm
+                        pass
+                    else:
+                        broken_external_links[lnk] = [stat, parent_url_dict[lnk][0].replace(
+                            self.live_server_url, 'https://www.postgresql.org'), parent_url_dict[lnk][1]]
             else:
                 broken_external_links[lnk] = "Not reachable"
 
