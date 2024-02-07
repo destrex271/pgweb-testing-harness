@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup as BSoup
 class CustomCrawler:
     def __init__(self, base_url):
         self.base_url = base_url
-        self.external_links = []
-        self.internal_links = []
+        self.external_links = set()
+        self.internal_links = set()
         self.parent_url_dict = {}
 
     def _extract_links(self, url):
@@ -23,10 +23,9 @@ class CustomCrawler:
                     continue
                 if href.startswith('http') and not (href.startswith('mailto') or href.startswith('#')):
                     if href.__contains__("localhost") or href.startswith('/'):
-                        self.internal_links.append(href)
+                        self.internal_links.add(href)
                     else:
-                        self.external_links.append(href)
-
+                        self.external_links.add(href)
                     self.parent_url_dict[href] = [url]
                     self.parent_url_dict[href].append(lk.get_text())
 

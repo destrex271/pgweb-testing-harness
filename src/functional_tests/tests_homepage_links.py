@@ -49,12 +49,14 @@ LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
 
 class CustomLinkTester(LiveServerTestCase):
-    def setUp(self):
-        super().setUp()
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
         serv = Service(executable_path=GeckoDriverManager().install())
-        self.selenium = webdriver.Firefox(service=serv, options=options)
+        cls.selenium = webdriver.Firefox(service=serv, options=options)
 
         # Loading initial dummy database
         varnish_cache()
@@ -65,12 +67,13 @@ class CustomLinkTester(LiveServerTestCase):
         call_command('loaddata', 'pgweb/featurematrix/fixtures/data.json')
 
         # Crawl links
-        self.crawler = CustomCrawler(self.live_server_url)
-        self.crawler.crawl()
+        cls.crawler = CustomCrawler(cls.live_server_url)
+        cls.crawler.crawl()
 
-    def tearDown(self):
-        self.selenium.quit()
-        super().tearDown()
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
 
     def test_internal_links(self):
         broken_internal_links = {}
@@ -89,7 +92,8 @@ class CustomLinkTester(LiveServerTestCase):
                 broken_internal_links[link] = "Not reachable"
 
         # Checking if the internal URL is working on the deployed version
-        for lk in broken_internal_links.keys():
+        broken_links=list(broken_internal_links.keys()).copy()
+        for lk in broken_links:
             lvk = str(lk).replace(
                 f'{self.live_server_url}', "https://www.postgresql.org")
 
