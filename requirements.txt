@@ -6,6 +6,5 @@ beautifulsoup4
 wget
 coverage
 pyscopg2
-logtopg
 axe-selenium-python==2.1.6
 supabase
