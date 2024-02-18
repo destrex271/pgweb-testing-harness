@@ -7,7 +7,7 @@ from django.test.testcases import call_command, connections
 from django.contrib.staticfiles.testing import LiveServerTestCase
 import random
 
-from .extra_utils.util_functions import create_permitted_user_with_org_email, generate_session_cookie, varnish_cache
+from .extra_utils.util_functions import create_permitted_user_with_org_email, generate_session_cookie, varnish_cache, fixture_teardown
 from .downloads.models import Product
 
 
@@ -19,36 +19,9 @@ markup_content = '''<h1>Introducing Product X: Revolutionizing the Way You Work<
   <p>Product X seamlessly integrates with your existing tools and systems, ensuring a smooth transition and minimizing disruption. Whether you use popular productivity suites or specialized software, Product X effortlessly integrates to provide a unified and efficient work environment.</p>
   <p>Experience the benefits of automation, seamless integration with existing tools, and a user-friendly interface that simplifies complex tasks. Say goodbye to manual processes and embrace a new era of efficiency with Product X.</p>'''
 
-# Fix for CASCADE TRUNCATE FK error
 
-
-def _fixture_teardown(self):
-    # Allow TRUNCATE ... CASCADE and don't emit the post_migrate signal
-    # when flushing only a subset of the apps
-    for db_name in self._databases_names(include_mirrors=False):
-        # Flush the database
-        inhibit_post_migrate = (
-            self.available_apps is not None
-            or (  # Inhibit the post_migrate signal when using serialized
-                # rollback to avoid trying to recreate the serialized data.
-                self.serialized_rollback
-                and hasattr(connections[db_name], "_test_serialized_contents")
-            )
-        )
-        call_command(
-            "flush",
-            verbosity=0,
-            interactive=False,
-            database=db_name,
-            reset_sequences=False,
-            # In the real TransactionTestCase this is conditionally set to False.
-            allow_cascade=True,
-            inhibit_post_migrate=inhibit_post_migrate,
-        )
-
-
-LiveServerTestCase._fixture_teardown = _fixture_teardown
 # ---------------------------
+LiveServerTestCase._fixture_teardown = fixture_teardown
 
 
 class ProductFormTests(LiveServerTestCase):
