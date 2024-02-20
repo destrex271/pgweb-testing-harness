@@ -29,14 +29,17 @@ class CustomCrawler:
                     self.parent_url_dict[href] = [url]
                     self.parent_url_dict[href].append(lk.get_text())
 
-    def crawl(self, max_depth=2):
+    def crawl(self, max_internal_depth=2, max_external_depth=1):
         url_queue = deque([(self.base_url + "/", 0)])  # (url, depth)
         all_urls = [url_queue[0][0]] # list of all urls visited
         while len(url_queue) > 0:
             cur_url, depth = url_queue.popleft()
-            if depth > max_depth:
+            
+            if cur_url in self.external_links and depth >= max_external_depth:
                 break
-
+            if cur_url in self.internal_links and depth >= max_internal_depth:
+                break
+            
             self._extract_links(cur_url)
 
             for link in self.internal_links:
