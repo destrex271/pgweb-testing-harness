@@ -44,6 +44,8 @@ if [ $harness_pip_stat != 0 ]; then
     handle_build_fail
 fi
 
+# Remove psycopg2 to avoid conflicts
+sed -i '/pyscopg2/d' ../../../requirements.txt
 pip install -r ../../../requirements.txt
 pgweb_pip_stat=$?
 if [ $pgweb_pip_stat != 0 ]; then
