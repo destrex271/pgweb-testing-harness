@@ -51,16 +51,24 @@ def setup_documentation():
         if '.' in link.text:
             vc = link.text.split('.')[0]
             if link.text[0] == 'v' and vc not in verk and int(vc[1:]) > 10:
-                download_map[link.text[1:]] = download_url + \
-                    link.text + "/postgresql-" + link.text[1:] + ".tar.gz"
+                if link.text[1:].__contains__('17'):
+                    download_map[link.text[1:]] = download_url + \
+                        link.text + "/postgresql-" + link.text[1:] + "-docs.tar.gz"
+                else:
+                    download_map[link.text[1:]] = download_url + \
+                        link.text + "/postgresql-" + link.text[1:] + ".tar.gz"
                 vers = link.text.split('.')[0]
                 verk.append(vers)
 
         elif 'beta' in link.text:
             vc = link.text.split('beta')[0]
             if link.text[0] == 'v' and vc not in verk and int(vc[1:]) > 12:
-                download_map[link.text[1:]] = download_url + \
-                    link.text + "/postgresql-" + link.text[1:] + ".tar.gz"
+                if link.text[1:].__contains__('17'):
+                    download_map[link.text[1:]] = download_url + \
+                        link.text + "/postgresql-" + link.text[1:] + "-docs.tar.gz"
+                else:
+                    download_map[link.text[1:]] = download_url + \
+                        link.text + "/postgresql-" + link.text[1:] + ".tar.gz"
                 vers = link.text.split('beta')[0]
                 verk.append(vers)
 
@@ -103,15 +111,23 @@ def setup_documentation():
 
     # download all documentation files
     for key in download_map:
+        print("Downloading from : ", download_map[key])
         wget.download(download_map[key])
+
+    import os
+    print("Checking current stuff:" + str(os.listdir()))
     
     for version, _ in download_map.items():
         versk = version.replace('beta', '.')
         vers = versk.split('.')
     
-        # print("Loading.. "+"postgresql-" + str(version) + ".tar.gz")
-        subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
-                                 "postgresql-" + str(version) + ".tar.gz"])
+        print("Loading.. "+"postgresql-" + str(version) + ".tar.gz")
+        if not version.__contains__('17'):
+            subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
+                                     "postgresql-" + str(version) + ".tar.gz"])
+        else:
+            subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
+                                     "postgresql-" + str(version) + "-docs.tar.gz"])
         # p.wait()
 
     return download_map

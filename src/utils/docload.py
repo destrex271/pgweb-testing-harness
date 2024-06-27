@@ -176,6 +176,7 @@ config.read(os.path.join(os.path.abspath(
     os.path.dirname(__file__)), 'docload.ini'))
 
 # Load a tarfile or a "naked" directory
+print("file: ", args[1])
 if os.path.isfile(args[1]):
     generator = parse_tarfile(args[1])
 elif os.path.isdir(args[1]):
@@ -202,7 +203,6 @@ curs.execute("SELECT * FROM core_version")
 curs.execute("SELECT current FROM core_version WHERE tree=%(v)s", {'v': ver})
 r = curs.fetchall()
 print(r)
-print("OK")
 if len(r) != 1:
     print("Version %s not found in the system, cannot load!" % ver)
     sys.exit(1)
@@ -216,6 +216,7 @@ c = csv.writer(s, delimiter=';', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
 # Import each page of documentation
 for filename, getter in generator:
     filename = os.path.basename(filename)
+    print(filename)
     f = getter()
 
     # determine if the file being loaded is an SVG or a regular doc file
@@ -227,7 +228,7 @@ for filename, getter in generator:
     # after successfully preparing the file for load, increase the page count
     pagecount += 1
 
-
+print("Page count: ", pagecount)
 if not quiet:
     print("Total parsed doc size: {:.1f} MB".format(s.tell() / (1024 * 1024)))
 

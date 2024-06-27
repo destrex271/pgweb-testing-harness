@@ -24,7 +24,6 @@ LiveServerTestCase._fixture_teardown = fixture_teardown
 
 def check_page(root_url, class_obj, version):
     urls = [root_url]
-    # print("Root url -> ", urls[0])
     base = root_url[:root_url.rfind("/")]
 
     broken_links = []
@@ -32,35 +31,25 @@ def check_page(root_url, class_obj, version):
     while len(urls) > 0:
 
         url = urls[0]
-        # print("Queued: ", url)
         page = requests.get(url)
+        # time.sleep(5)
         soup = Bsoup(page.text, "html.parser")
         content = soup.find_all(id='docContent')
+        if not content or len(content) == 0:
+            raise Exception(" No content in page: " + url)
         content = content[0].get_text()
         class_obj.assertGreater(len(content), 100)
         # print("Content Length at " + url + " : " + str(len(content)))
         nav_btns = soup.find_all("a")
         next_url = None
-        # for lnk in nav_btns:
-        #     lk = lnk.get('href')
-        #     if lk:
-        #         if not lk.startswith('http'):
-        #             lk = base + '/' + lk
-        #         stat = requests.get(lk).status_code
-        #         if stat != 200:
-        #             broken_links.append([lk, url])
         for btn in nav_btns:
             if btn.get_text() == 'Next':
                 next_url = base + '/' + btn.get('href')
         if next_url:
-            # print(next_url)
             urls.append(next_url)
         del urls[0]
 
-    # if len(broken_links) > 0:
-        # class_obj.assertFalse(True, 'Broken Links present in documentation. Kindly go through the broken links log file')
-
-    return 0
+    return (0, base)
 
 
 class DocumentationRenderTests(LiveServerTestCase):
@@ -81,7 +70,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.vers_list = []
         download_map = setup_documentation()
         cls.dld = download_map
-        # print("LOADED: ", download_map)
+        print("LOADED: ", download_map)
         for version, _ in download_map.items():
             cls.vers_list.append(version)
 
@@ -127,6 +116,7 @@ class DocumentationRenderTests(LiveServerTestCase):
                 link_hrefs[link.text] = link.get_attribute("href")
                 i += 1
 
+        print("Checking for urls: ", link_hrefs)
         executor = concurrent.futures.ThreadPoolExecutor(max_docs)
         tasks = []
         for version, url in link_hrefs.items():
@@ -138,5 +128,4 @@ class DocumentationRenderTests(LiveServerTestCase):
             try:
                 data = ftask.result()
             except Exception as ex:
-                # print(ex)
-                self.assertTrue(False, msg='Error in rendering documentation')
+                self.assertTrue(False, msg='Error in checking documentaion' + str(ex))
