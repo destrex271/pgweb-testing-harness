@@ -5,11 +5,11 @@
   workflow_dispatch: null
 jobs:
   run-tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         pg_version:
-          - 15
+          - 16
     services:
       postgres:
         image: 'postgres:${{ matrix.pg_version }}'
