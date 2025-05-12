@@ -31,7 +31,8 @@ Please visit the actions page for more info on the latest run.
 '''
 for to_user in us_dict['to']:
     msg = MIMEMultipart()
-    msg['From'] = USERNAME
+    sender_email = str(USERNAME).strip().replace('\n', '').replace('\r', '')
+    msg['From'] = sender_email
     msg['To'] = to_user
     msg['Subject'] = 'Testing Harness Reports for latest commit'
     msg.attach(MIMEText(message, 'plain'))
