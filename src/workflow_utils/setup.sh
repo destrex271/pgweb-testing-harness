@@ -18,7 +18,7 @@ sudo apt update && sudo apt install git -y
 sudo apt-get install -y postgresql-client python3-dev python3-pip firefox libnss3 libtidy-dev
 
 # Clone PGWeb repository
-git clone git://git.postgresql.org/git/pgweb.git
+git clone https://git.postgresql.org/git/pgweb.git
 cd pgweb
 echo "Cloned Repo"
 
