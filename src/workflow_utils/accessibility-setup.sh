@@ -6,7 +6,7 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 # ------------------------------
 
 # Clone PGWeb repository
-git clone git://git.postgresql.org/git/pgweb.git
+git clone https://git.postgresql.org/git/pgweb.git
 cd pgweb
 ls
 
