@@ -36,6 +36,8 @@ which psql
 # yarn global add @unlighthouse/cli puppeteer
 
 # Python dependencies
+echo "Installing pgweb dependencies...."
+sed -i '/psycopg2/d' ../../../requirements.txt
 pip install -r requirements.txt
 harness_pip_stat=$?
 echo $harness_pip_stat
@@ -43,9 +45,10 @@ if [ $harness_pip_stat != 0 ]; then
     echo "Harness failed in installing dependencies"
     handle_build_fail
 fi
+echo "Dependencies Installed for  pgweb!"
+
 
 # Remove psycopg2 to avoid conflicts
-sed -i '/psycopg2/d' ../../../requirements.txt
 pip install -r ../../../requirements.txt
 pgweb_pip_stat=$?
 if [ $pgweb_pip_stat != 0 ]; then
