@@ -16,6 +16,7 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 # Build System dependencies
 sudo apt update && sudo apt install git -y 
 sudo apt-get install -y postgresql-client python3-dev python3-pip firefox libnss3 libtidy-dev
+sudo apt-get install python-yaml
 
 # Clone PGWeb repository
 git clone https://git.postgresql.org/git/pgweb.git
@@ -38,6 +39,7 @@ which psql
 # Python dependencies
 echo "Installing pgweb dependencies...."
 sed -i '/psycopg2/d' requirements.txt
+sed -i '/pyyaml/d' requirements.txt
 pip install -r requirements.txt
 harness_pip_stat=$?
 echo $harness_pip_stat
