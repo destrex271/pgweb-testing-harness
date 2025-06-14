@@ -14,7 +14,7 @@ function trigger() {
 
 apt update -y && apt upgrade -y
 apt install -y git curl
-git clone git://git.postgresql.org/git/pgweb.git
+git clone https://git.postgresql.org/git/pgweb.git
 
 ls
 strp=$(cat commit_id.txt)
