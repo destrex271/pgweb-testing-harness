@@ -2,7 +2,7 @@ REPO_NAME="pgweb-testing-harness"
 REPO_OWNER="destrex271"
 GITHUB_TOKEN="$SECRET_KEY"
 
-git clone git://git.postgresql.org/git/pgweb.git
+git clone https://git.postgresql.org/git/pgweb.git
 cd pgweb
 
 # Get last commit id
