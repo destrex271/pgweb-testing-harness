@@ -3,6 +3,7 @@ function handle_build_fail(){
     echo "Build Failed!"
     exec > ../../failed_tests.log 2>&1
     echo "Errors reported"
+    exit 1
 }
 
 #
