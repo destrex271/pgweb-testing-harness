@@ -19,9 +19,6 @@ sudo apt update && sudo apt install git -y
 # sudo apt-get install -y postgresql-client python3-dev python3-pip firefox libnss3 libtidy-dev
 sudo apt-get install -y \
     postgresql-client \
-    python3.9 \
-    python3.9-dev \
-    python3.9-distutils \
     firefox \
     libnss3 \
     libtidy-dev
@@ -50,7 +47,7 @@ echo "Installing pgweb dependencies...."
 sed -i '/psycopg2/d' requirements.txt
 sed -i '/PyYAML/d' requirements.txt
 sed -i '/pycryptodomex/d' requirements.txt
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 harness_pip_stat=$?
 echo $harness_pip_stat
 if [ $harness_pip_stat != 0 ]; then
@@ -61,7 +58,7 @@ echo "Dependencies Installed for  pgweb!"
 
 
 # Remove psycopg2 to avoid conflicts
-pip install -r ../../../requirements.txt
+python3 -m pip install -r ../../../requirements.txt
 pgweb_pip_stat=$?
 if [ $pgweb_pip_stat != 0 ]; then
     echo "Harness unable to install pgweb dependencies"
