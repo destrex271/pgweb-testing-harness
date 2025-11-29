@@ -15,15 +15,15 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 # ------------------------------
 
 # Build System dependencies
-sudo apt update && sudo apt install git -y 
-# sudo apt-get install -y postgresql-client python3-dev python3-pip firefox libnss3 libtidy-dev
+apt update && apt install git -y 
+# apt-get install -y postgresql-client python3-dev python3-pip firefox libnss3 libtidy-dev
 
-sudo apt-get install -y \
+apt-get install -y \
     postgresql-client \
     firefox \
     libnss3 \
     libtidy-dev
-sudo apt-get install python-yaml
+apt-get install python-yaml
 
 # Clone PGWeb repository
 git clone https://git.postgresql.org/git/pgweb.git
@@ -32,8 +32,8 @@ echo "Cloned Repo"
 
 # Install chrome
 # wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-# sudo apt install -y ./google-chrome-stable_current_amd64.deb
-# sudo apt install -y chromium-browser
+# apt install -y ./google-chrome-stable_current_amd64.deb
+# apt install -y chromium-browser
 
 pg_isready --host=localhost
 which psql
@@ -110,7 +110,7 @@ fi
 # Load version fixtures
 PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # Scripts to load initial data
-# sudo chmod +x pgweb/load_initial_data.sh
+# chmod +x pgweb/load_initial_data.sh
 # yes | ./pgweb/load_initial_data.sh
 # echo "Loaded data"
 
