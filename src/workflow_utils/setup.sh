@@ -22,7 +22,7 @@ sudo apt-get install -y \
     firefox \
     libnss3 \
     libtidy-dev
-sudo apt-get install python-yaml
+# sudo apt-get install python-yaml
 
 # Clone PGWeb repository
 git clone https://git.postgresql.org/git/pgweb.git
@@ -45,7 +45,7 @@ which psql
 # Python dependencies
 echo "Installing pgweb dependencies...."
 sed -i '/psycopg2/d' requirements.txt
-sed -i '/PyYAML/d' requirements.txt
+# sed -i '/PyYAML/d' requirements.txt
 sed -i '/pycryptodomex/d' requirements.txt
 python3 -m pip install -r requirements.txt
 harness_pip_stat=$?
