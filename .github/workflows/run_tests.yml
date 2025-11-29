@@ -21,6 +21,9 @@ jobs:
         options: >-
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
       - name: Checkout Current Repository
         uses: actions/checkout@v3
       - name: Clone and shift tests
