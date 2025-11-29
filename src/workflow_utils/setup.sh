@@ -48,6 +48,7 @@ echo "Installing pgweb dependencies...."
 sed -i '/psycopg2/d' requirements.txt
 # sed -i '/PyYAML/d' requirements.txt
 sed -i '/pycryptodomex/d' requirements.txt
+python3 -m pip install --upgrade pip setuptools wheel
 python3 -m pip install -r requirements.txt
 harness_pip_stat=$?
 echo $harness_pip_stat
