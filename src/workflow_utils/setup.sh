@@ -51,8 +51,8 @@ echo "Installing pgweb dependencies...."
 sed -i '/psycopg2/d' requirements.txt
 # sed -i '/PyYAML/d' requirements.txt
 sed -i '/pycryptodomex/d' requirements.txt
-python3 -m pip install --upgrade pip setuptools wheel
-python3 -m pip install -r requirements.txt
+python3.9 -m pip install --upgrade pip setuptools wheel
+python3.9 -m pip install -r requirements.txt
 harness_pip_stat=$?
 echo $harness_pip_stat
 if [ $harness_pip_stat != 0 ]; then
@@ -63,7 +63,7 @@ echo "Dependencies Installed for  pgweb!"
 
 
 # Remove psycopg2 to avoid conflicts
-python3 -m pip install -r ../../../requirements.txt
+python3.9 -m pip install -r ../../../requirements.txt
 pgweb_pip_stat=$?
 if [ $pgweb_pip_stat != 0 ]; then
     echo "Harness unable to install pgweb dependencies"
@@ -94,7 +94,7 @@ cp -r ../../utils pgweb/
 export DJANGO_SETTINGS_MODULE=pgweb.settings
 ls
 # Migrations
-python3 manage.py makemigrations
+python3.9 manage.py makemigrations
 make_migrate_stat=$?
 
 if [ $make_migrate_stat != 0 ]; then
@@ -102,7 +102,7 @@ if [ $make_migrate_stat != 0 ]; then
     handle_build_fail
 fi
 
-python3 manage.py migrate
+python3.9 manage.py migrate
 migrate_stat=$?
 if [ $make_migrate_stat != 0 ]; then
     echo "\n\nError in Making migrations"
@@ -119,9 +119,9 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # yes | ./pgweb/load_initial_data.sh
 # ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 # ./manage.py test --pattern="tests_re*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-python3 manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+python3.9 manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 
-python3 ../../utils/process_logs.py
+python3.9 ../../utils/process_logs.py
 cat ../../final_report.log
 cat ../../failed_tests.log
 
