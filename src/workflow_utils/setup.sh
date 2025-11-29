@@ -49,6 +49,7 @@ which psql
 echo "Installing pgweb dependencies...."
 sed -i '/psycopg2/d' requirements.txt
 sed -i '/PyYAML/d' requirements.txt
+sed -i '/pycryptodomex/d' requirements.txt
 pip install -r requirements.txt
 harness_pip_stat=$?
 echo $harness_pip_stat

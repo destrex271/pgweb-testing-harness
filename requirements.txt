@@ -7,4 +7,5 @@ wget
 coverage
 psycopg2-binary
 axe-selenium-python==2.1.6
+pycryptodomex>=3.4.7
 supabase
