@@ -23,7 +23,7 @@ sudo apt-get install -y \
     firefox \
     libnss3 \
     libtidy-dev
-# sudo apt-get install python-yaml
+sudo apt-get install python-yaml
 
 # Clone PGWeb repository
 git clone https://git.postgresql.org/git/pgweb.git
@@ -91,7 +91,6 @@ cp -r ../../utils pgweb/
 export DJANGO_SETTINGS_MODULE=pgweb.settings
 ls
 
-python3.9 -m pip install PyYAML --global-option=--without-libyaml
 # Migrations
 python3.9 manage.py makemigrations
 make_migrate_stat=$?
