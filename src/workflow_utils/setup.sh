@@ -27,7 +27,8 @@ apt-get install -y \
     python3 \
     python3-pip \
     python3-venv \
-    python3-yaml
+    python3-yaml \
+    xvbf
 
 
 # Clone PGWeb repository
