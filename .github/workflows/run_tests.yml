@@ -10,6 +10,9 @@ jobs:
       matrix:
         pg_version:
           - 16
+    container:
+      image: debian:bullseye
+      options: --user root
     services:
       postgres:
         image: "postgres:${{ matrix.pg_version }}"
