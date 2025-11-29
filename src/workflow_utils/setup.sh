@@ -9,7 +9,7 @@ function handle_build_fail(){
 #
 # Settings for settings_local.py
 conf='DEBUG=True\nSITE_ROOT="http://localhost:8000"\nSESSION_COOKIE_SECURE=False\nSESSION_COOKIE_DOMAIN=None\nCSRF_COOKIE_SECURE=False\nCSRF_COOKIE_DOMAIN=None\nALLOWED_HOSTS=["*"]\nSTATIC_ROOT = "/var/www/example.com/static/"'
-database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql',\n\t\t'NAME': 'db',\n\t\t'PORT': 5432,\n\t\t'PASSWORD': 'postgres',\n\t\t'HOST' : 'localhost',\n\t\t'USER': 'postgres'\n\t}\n}"
+database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql',\n\t\t'NAME': 'db',\n\t\t'PORT': 5432,\n\t\t'PASSWORD': 'postgres',\n\t\t'HOST' : 'postgres',\n\t\t'USER': 'postgres'\n\t}\n}"
 # database = "DATABASES={\n\t'default' : {\n\t\t'ENGINE': 'django.db.backends.sqlite3','NAME':'db'}}"
 
 # ------------------------------
@@ -75,8 +75,8 @@ fi
 echo "installed"
 
 # Create Database & add procedures
-PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE db;"
-PGPASSWORD=postgres psql -h localhost -U postgres -d db -f sql/varnish_local.sql
+PGPASSWORD=postgres psql -h postgres -U postgres -c "CREATE DATABASE db;"
+PGPASSWORD=postgres psql -h postgres -U postgres -d db -f sql/varnish_local.sql
 
 # Add Local Settings
 touch pgweb/settings_local.py
@@ -113,7 +113,7 @@ if [ $make_migrate_stat != 0 ]; then
 fi
 
 # Load version fixtures
-PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
+PGPASSWORD=postgres psql -h postgres -U postgres -a -f sql/varnish_local.sql
 # Scripts to load initial data
 # chmod +x pgweb/load_initial_data.sh
 # yes | ./pgweb/load_initial_data.sh
@@ -128,4 +128,4 @@ python3 ../../utils/process_logs.py
 cat ../../final_report.log
 cat ../../failed_tests.log
 
-PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE db;"
+PGPASSWORD=postgres psql -h postgres -U postgres -c "DROP DATABASE db;"
