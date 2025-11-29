@@ -15,15 +15,20 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 # ------------------------------
 
 # Build System dependencies
-apt update && apt install git -y 
-# apt-get install -y postgresql-client python3-dev python3-pip firefox libnss3 libtidy-dev
+apt-get update
 
 apt-get install -y \
+    git \
     postgresql-client \
-    firefox \
+    postgresql-client-common \
+    firefox-esr \
     libnss3 \
-    libtidy-dev
-apt-get install python-yaml
+    libtidy-dev \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-yaml
+
 
 # Clone PGWeb repository
 git clone https://git.postgresql.org/git/pgweb.git
@@ -48,8 +53,8 @@ echo "Installing pgweb dependencies...."
 sed -i '/psycopg2/d' requirements.txt
 # sed -i '/PyYAML/d' requirements.txt
 sed -i '/pycryptodomex/d' requirements.txt
-python3.9 -m pip install --upgrade pip setuptools wheel
-python3.9 -m pip install -r requirements.txt
+python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install -r requirements.txt
 harness_pip_stat=$?
 echo $harness_pip_stat
 if [ $harness_pip_stat != 0 ]; then
@@ -60,7 +65,7 @@ echo "Dependencies Installed for  pgweb!"
 
 
 # Remove psycopg2 to avoid conflicts
-python3.9 -m pip install -r ../../../requirements.txt
+python3 -m pip install -r ../../../requirements.txt
 pgweb_pip_stat=$?
 if [ $pgweb_pip_stat != 0 ]; then
     echo "Harness unable to install pgweb dependencies"
@@ -92,7 +97,7 @@ export DJANGO_SETTINGS_MODULE=pgweb.settings
 ls
 
 # Migrations
-python3.9 manage.py makemigrations
+python3 manage.py makemigrations
 make_migrate_stat=$?
 
 if [ $make_migrate_stat != 0 ]; then
@@ -100,7 +105,7 @@ if [ $make_migrate_stat != 0 ]; then
     handle_build_fail
 fi
 
-python3.9 manage.py migrate
+python3 manage.py migrate
 migrate_stat=$?
 if [ $make_migrate_stat != 0 ]; then
     echo "\n\nError in Making migrations"
@@ -117,9 +122,9 @@ PGPASSWORD=postgres psql -h localhost -U postgres -a -f sql/varnish_local.sql
 # yes | ./pgweb/load_initial_data.sh
 # ./manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 # ./manage.py test --pattern="tests_re*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
-python3.9 manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
+python3 manage.py test --pattern="tests_*.py" --keepdb --verbosity=2 2>&1 | tee -a ../../final_report.log
 
-python3.9 ../../utils/process_logs.py
+python3 ../../utils/process_logs.py
 cat ../../final_report.log
 cat ../../failed_tests.log
 
