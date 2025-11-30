@@ -23,6 +23,8 @@ class CreateUserAccount(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-gpu")
         serv = Service(executable_path=GeckoDriverManager().install())
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
@@ -194,6 +196,8 @@ class UserLoginTests(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-gpu")
         serv = Service(executable_path=GeckoDriverManager().install())
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
@@ -293,6 +297,8 @@ class EditProfileFormTests(LiveServerTestCase):
         super().setUpClass()
         options = webdriver.FirefoxOptions()
         options.headless = True
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-gpu")
         serv = Service(executable_path=GeckoDriverManager().install())
         cls.selenium = webdriver.Firefox(
             service=serv, options=options)
