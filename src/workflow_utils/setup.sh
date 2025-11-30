@@ -30,7 +30,12 @@ apt-get install -y \
     xvfb \
     libgtk-3-0 libdbus-glib-1-2 libxt6 libpci3 libasound2 \
     libx11-xcb1 libxrandr2 libxss1 libxv1 libxi6 \
-    libgl1 libnss3
+    libgl1 libnss3 wget tar
+
+wget https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz
+tar -xvzf geckodriver-v0.36.0-linux64.tar.gz
+mv geckodriver /usr/local/bin/
+chmod +x /usr/local/bin/geckodriver
 
 
 # Clone PGWeb repository
@@ -43,6 +48,7 @@ echo "Cloned Repo"
 # apt install -y ./google-chrome-stable_current_amd64.deb
 # apt install -y chromium-browser
 
+export MOZ_HEADLESS=1
 pg_isready --host=localhost
 which psql
 
