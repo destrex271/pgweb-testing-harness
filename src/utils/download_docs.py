@@ -123,10 +123,10 @@ def setup_documentation():
     
         print("Loading.. "+"postgresql-" + str(version) + ".tar.gz")
         if not version.__contains__('17'):
-            subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
+            subprocess.run(['python3', './pgweb/utils/docload.py', vers[0],
                                      "postgresql-" + str(version) + ".tar.gz"])
         else:
-            subprocess.run(['python', './pgweb/utils/docload.py', vers[0],
+            subprocess.run(['python3', './pgweb/utils/docload.py', vers[0],
                                      "postgresql-" + str(version) + "-docs.tar.gz"])
         # p.wait()
 
