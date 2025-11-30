@@ -13,10 +13,10 @@ database="DATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postg
 # database = "DATABASES={\n\t'default' : {\n\t\t'ENGINE': 'django.db.backends.sqlite3','NAME':'db'}}"
 
 # ------------------------------
-
+echo "deb http://deb.debian.org/debian bullseye-backports main" \
+  > /etc/apt/sources.list.d/backports.list
 # Build System dependencies
 apt-get update
-
 apt-get install -y \
     git \
     postgresql-client \
@@ -28,8 +28,13 @@ apt-get install -y \
     python3-pip \
     python3-venv \
     python3-yaml \
-    xvfb
+    xvfb \
+    libgtk-3-0 libdbus-glib-1-2 libxt6 libpci3 libasound2 \
+    libx11-xcb1 libxrandr2 libxss1 libxv1 libxi6 \
+    libgl1 libnss3
 
+
+apt-get -t -y bullseye-backports install geckodriver
 
 # Clone PGWeb repository
 git clone https://git.postgresql.org/git/pgweb.git
