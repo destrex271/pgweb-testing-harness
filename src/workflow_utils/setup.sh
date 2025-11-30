@@ -34,7 +34,7 @@ apt-get install -y \
     libgl1 libnss3
 
 
-apt-get -t -y bullseye-backports install geckodriver
+apt-get -t bullseye-backports install geckodriver
 
 # Clone PGWeb repository
 git clone https://git.postgresql.org/git/pgweb.git
