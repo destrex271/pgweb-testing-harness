@@ -11,11 +11,46 @@ from django.contrib.auth.models import Permission, User
 from django.test.testcases import call_command
 # Additional Libraries
 import hashlib
+import os
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
 
 # pgweb codebase models; ignore the errors
 from pgweb.core.models import Organisation, OrganisationType, OrganisationEmail
 from pgweb.events.models import Event
 from pgweb.news.models import NewsTag
+
+
+def create_firefox_driver():
+    """
+    Create a Firefox WebDriver instance configured for container environments.
+    This function sets up proper Firefox options and preferences to avoid
+    issues in containerized environments like Debian 11.
+    """
+    # Ensure DISPLAY is set for xvfb
+    if 'DISPLAY' not in os.environ:
+        os.environ['DISPLAY'] = ':99'
+    
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    
+    # Firefox-specific preferences for container environments
+    # Disable caching to avoid /dev/shm issues in containers
+    options.set_preference("browser.cache.disk.enable", False)
+    options.set_preference("browser.cache.memory.enable", False)
+    options.set_preference("browser.cache.offline.enable", False)
+    options.set_preference("network.http.use-cache", False)
+    
+    # Create service with geckodriver
+    serv = Service(
+        executable_path=GeckoDriverManager().install(),
+        log_path=os.path.devnull  # Suppress geckodriver logs
+    )
+    
+    # Create and return the WebDriver instance
+    driver = webdriver.Firefox(service=serv, options=options)
+    return driver
 
 
 def varnish_cache():

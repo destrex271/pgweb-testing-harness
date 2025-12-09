@@ -8,7 +8,7 @@ from selenium import webdriver
 import requests
 from selenium.webdriver.firefox.service import Service
 from django.db import connection
-from .extra_utils.util_functions import varnish_cache, fixture_teardown
+from .extra_utils.util_functions import varnish_cache, fixture_teardown, create_firefox_driver
 from bs4 import BeautifulSoup as BSoup
 from .extra_utils.crawler import CustomCrawler
 from .utils.download_docs import setup_documentation
@@ -27,10 +27,7 @@ class CustomLinkTester(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(service=serv, options=options)
+        cls.selenium = create_firefox_driver()
 
         # Loading initial dummy database
         varnish_cache()

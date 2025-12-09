@@ -9,7 +9,7 @@ from django.contrib.staticfiles.testing import LiveServerTestCase
 
 # Util functions
 
-from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, varnish_cache, fixture_teardown
+from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, varnish_cache, fixture_teardown, create_firefox_driver
 
 # Models from pgweb codebase
 from .core.models import Organisation
@@ -29,11 +29,7 @@ class OrgFormTests(LiveServerTestCase):
         cls.prefix = "id_"
 
         # Webdriver Configuration
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
 
         # dummy data
         cls.org_name = "Organisation XYZ"

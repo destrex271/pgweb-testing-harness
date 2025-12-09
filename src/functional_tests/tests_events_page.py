@@ -12,7 +12,7 @@ from .core.models import Organisation, OrganisationType
 from .events.models import Event
 
 # Util functions
-from .extra_utils.util_functions import create_unauth_user, create_permitted_user, generate_session_cookie, varnish_cache, fixture_teardown
+from .extra_utils.util_functions import create_unauth_user, create_permitted_user, generate_session_cookie, varnish_cache, fixture_teardown, create_firefox_driver
 
 
 markup_content = '''
@@ -97,11 +97,7 @@ class EventsForm(LiveServerTestCase):
         cls.prefix = "id_"
 
         # Webdriver Configuration
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
 
         varnish_cache()
 

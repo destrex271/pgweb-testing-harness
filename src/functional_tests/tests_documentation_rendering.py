@@ -7,7 +7,7 @@ from selenium import webdriver
 from django.test.testcases import call_command, connections
 from django.contrib.staticfiles.testing import LiveServerTestCase
 
-from .extra_utils.util_functions import varnish_cache, fixture_teardown
+from .extra_utils.util_functions import varnish_cache, fixture_teardown, create_firefox_driver
 from .utils.download_docs import setup_documentation
 import concurrent.futures
 from copy import deepcopy
@@ -61,11 +61,7 @@ class DocumentationRenderTests(LiveServerTestCase):
         cls.prefix = "id_"
 
         # Webdriver Configuration
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
         varnish_cache()
         cls.vers_list = []
         download_map = setup_documentation()

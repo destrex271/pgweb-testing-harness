@@ -6,7 +6,7 @@ from selenium import webdriver
 from django.test.testcases import call_command, connections
 from django.contrib.staticfiles.testing import LiveServerTestCase
 
-from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, varnish_cache, fixture_teardown
+from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, varnish_cache, fixture_teardown, create_firefox_driver
 
 LiveServerTestCase._fixture_teardown = fixture_teardown
 
@@ -23,11 +23,7 @@ class BugReportsForm(LiveServerTestCase):
         cls.prefix = "id_"
 
         # Webdriver Configuration
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
 
         # dummy data
         cls.name = "Dummy Bug"
