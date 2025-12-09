@@ -1,14 +1,11 @@
 import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium import webdriver
 
 from django.test.testcases import call_command, connections
 from django.contrib.staticfiles.testing import LiveServerTestCase
 
-from .extra_utils.util_functions import create_permitted_user_with_org_email, generate_session_cookie, varnish_cache, fixture_teardown
+from .extra_utils.util_functions import create_permitted_user_with_org_email, generate_session_cookie, varnish_cache, fixture_teardown, create_firefox_driver
 
 from .news.models import NewsArticle
 
@@ -39,11 +36,7 @@ class NewsFormTests(LiveServerTestCase):
         cls.prefix = "id_"
 
         # Webdriver Configuration
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
 
         # dummy data
         cls.title = "News XYZ"

@@ -1,15 +1,12 @@
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.test.testcases import call_command, connections
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium import webdriver
 import selenium
 
 from django.contrib.auth.models import User
 from string import punctuation
 
-from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, fixture_teardown
+from .extra_utils.util_functions import create_permitted_user, generate_session_cookie, fixture_teardown, create_firefox_driver
 
 LiveServerTestCase._fixture_teardown = fixture_teardown
 
@@ -21,13 +18,7 @@ class CreateUserAccount(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-gpu")
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
         cls.username = "testuser"
         cls.firstname = "test"
         cls.lastname = "user"
@@ -194,13 +185,7 @@ class UserLoginTests(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-gpu")
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
         cls.username = "root"
         cls.email = "root@gmail.com"
         cls.passwd = "root"
@@ -295,13 +280,7 @@ class EditProfileFormTests(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        options = webdriver.FirefoxOptions()
-        options.headless = True
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-gpu")
-        serv = Service(executable_path=GeckoDriverManager().install())
-        cls.selenium = webdriver.Firefox(
-            service=serv, options=options)
+        cls.selenium = create_firefox_driver()
         cls.username = "root"
         cls.alt_email = "root2@gmail.com"
         cls.alt_first_name = "rootfname"
