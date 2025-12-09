@@ -47,7 +47,7 @@ def create_firefox_driver():
     
     # Create service with geckodriver
     # Log to /dev/null unless GECKODRIVER_LOG env var is set for debugging
-    log_path = os.environ.get('GECKODRIVER_LOG', os.path.devnull)
+    log_path = os.environ.get('GECKODRIVER_LOG', os.devnull)
     serv = Service(
         executable_path=GeckoDriverManager().install(),
         log_path=log_path
