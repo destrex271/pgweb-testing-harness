@@ -3,10 +3,7 @@ import re
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.test.testcases import call_command, connection, connections
 from selenium.webdriver.common.by import By
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium import webdriver
 import requests
-from selenium.webdriver.firefox.service import Service
 from django.db import connection
 from .extra_utils.util_functions import varnish_cache, fixture_teardown, create_firefox_driver
 from bs4 import BeautifulSoup as BSoup

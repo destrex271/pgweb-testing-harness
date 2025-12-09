@@ -3,9 +3,6 @@ from django.contrib.auth.models import Permission, User
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.test.testcases import call_command, connections
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium import webdriver
 
 # pgweb codebase models; ignore the errors
 from .core.models import Organisation, OrganisationType
